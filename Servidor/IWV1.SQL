@@ -1,87 +1,80 @@
--- DB principal (já deves ter algumas tabelas, aqui estão as necessárias/novas)
-CREATE DATABASE IF NOT EXISTS ia_v3;
+-- Criar banco
+CREATE DATABASE IF NOT EXISTS multi_empresa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE ia_v3;
+USE multi_empresa;
 
--- empresas, dispositivos, mensagens_recebidas, lastmessage_user, logs (se já tens, adapte)
-CREATE TABLE IF NOT EXISTS empresas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    api_key_enc TEXT NOT NULL,
-    device_limit INT NOT NULL DEFAULT 10,
-    email_responsavel VARCHAR(255) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+-- Tabela de Empresas
+CREATE TABLE IF NOT EXISTS Empresas (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(255) NOT NULL,
+    API_KEY VARCHAR(255) NOT NULL,
+    QuantidadeDispositivos INT DEFAULT 5,
+    Email VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS dispositivos (
-    disp_id INT AUTO_INCREMENT PRIMARY KEY,
-    empresa_id INT NOT NULL,
-    mac_or_ip VARCHAR(128),
-    tipo VARCHAR(64),
-    token VARCHAR(512),
-    ativo BOOLEAN DEFAULT TRUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas (id) ON DELETE CASCADE
+-- Tabela de Dispositivos
+CREATE TABLE IF NOT EXISTS Dispositivos (
+    DispId INT AUTO_INCREMENT PRIMARY KEY,
+    EmpresaID INT NOT NULL,
+    MacIp VARCHAR(100),
+    Tipo VARCHAR(50),
+    PairCode VARCHAR(6),
+    Paired TINYINT(1) DEFAULT 0,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS mensagens_recebidas (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    empresaid INT NOT NULL,
-    numero VARCHAR(64),
-    nome VARCHAR(255),
-    texto LONGTEXT,
-    tipo ENUM('audio', 'texto', 'media') DEFAULT 'texto',
-    data DATETIME DEFAULT CURRENT_TIMESTAMP,
-    processed BOOLEAN DEFAULT FALSE,
-    response_id BIGINT NULL,
-    FOREIGN KEY (empresaid) REFERENCES empresas (id) ON DELETE CASCADE
+-- Tabela de Mensagens Placeholder (de exemplo: bem-vindo, lembrete, etc)
+CREATE TABLE IF NOT EXISTS Mensagens_Placeholder (
+    MensagemId INT AUTO_INCREMENT PRIMARY KEY,
+    EmpresaID INT NOT NULL,
+    Texto TEXT NOT NULL,
+    Tipo VARCHAR(50) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS lastmessage_user (
-    userid BIGINT PRIMARY KEY,
-    empresaid INT NOT NULL,
-    numero VARCHAR(64),
-    data DATETIME,
-    FOREIGN KEY (empresaid) REFERENCES empresas (id) ON DELETE CASCADE
+-- Tabela de Mensagens Recebidas
+CREATE TABLE IF NOT EXISTS Mensagens_Recebidas (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    EmpresaID INT NOT NULL,
+    Numero VARCHAR(50) NOT NULL,
+    Nome VARCHAR(255),
+    Texto TEXT,
+    Data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS logs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    empresaid INT NULL,
-    disp_id INT NULL,
-    nivel ENUM(
-        'INFO',
-        'WARN',
-        'ERROR',
-        'SEC'
-    ) DEFAULT 'INFO',
-    mensagem TEXT,
-    meta JSON,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+-- Tabela LastMessage_User
+CREATE TABLE IF NOT EXISTS LastMessage_User (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    EmpresaID INT NOT NULL,
+    Numero VARCHAR(50) NOT NULL,
+    Data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
 
--- fila persistente: jobs
-CREATE TABLE IF NOT EXISTS jobs (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    empresaid INT NOT NULL,
-    disp_id INT NULL,
-    mensagem_id BIGINT NULL,
-    tipo ENUM(
-        'transcribe',
-        'openai',
-        'deliver'
-    ) NOT NULL,
-    payload JSON,
-    status ENUM(
-        'pending',
-        'processing',
-        'done',
-        'failed'
-    ) DEFAULT 'pending',
-    attempts INT DEFAULT 0,
-    last_error TEXT,
-    locked_by VARCHAR(128) NULL,
-    locked_at DATETIME NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+-- Tabela de Consultas
+CREATE TABLE IF NOT EXISTS Consultas (
+    ConsID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    EmpresaID INT NOT NULL,
+    Nome VARCHAR(255) NOT NULL,
+    Motivo TEXT,
+    DataMarcado DATETIME,
+    DataConsulta DATETIME,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
+
+-- Indexes para performance
+CREATE INDEX idx_empresas_id ON Empresas (ID);
+
+CREATE INDEX idx_dispositivos_emp ON Dispositivos (EmpresaID);
+
+CREATE INDEX idx_msgs_emp ON Mensagens_Recebidas (EmpresaID);
+
+CREATE INDEX idx_lastmsg_emp ON LastMessage_User (EmpresaID);
+
+CREATE INDEX idx_consultas_emp ON Consultas (EmpresaID);
