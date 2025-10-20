@@ -1,7 +1,7 @@
 -- Criar banco
-CREATE DATABASE IF NOT EXISTS multi_empresa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS ironwatchv1 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE multi_empresa;
+USE ironwatchv1;
 
 -- Tabela de Empresas
 CREATE TABLE IF NOT EXISTS Empresas (
@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS Empresas (
     API_KEY VARCHAR(255) NOT NULL,
     QuantidadeDispositivos INT DEFAULT 5,
     Email VARCHAR(255) NOT NULL,
+    PromptIA TEXT NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -64,6 +65,15 @@ CREATE TABLE IF NOT EXISTS Consultas (
     Motivo TEXT,
     DataMarcado DATETIME,
     DataConsulta DATETIME,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS SuperAdminDevices (
+    SuperId INT AUTO_INCREMENT PRIMARY KEY,
+    MacIp VARCHAR(100) DEFAULT NULL,
+    PairCode VARCHAR(10) NOT NULL,
+    Paired TINYINT(1) DEFAULT 0,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
