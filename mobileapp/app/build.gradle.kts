@@ -1,4 +1,4 @@
-// build.gradle (Module: app)
+// build.gradle.kts (Module: app)
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -41,14 +41,14 @@ android {
     }
 
     buildFeatures {
-        compose true
+        compose = true
     }
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
 
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
