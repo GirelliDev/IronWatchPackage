@@ -1,22 +1,16 @@
+<!-- res/values/styles.xml -->
 <resources>
-    <!-- Base application style -->
-    <style name="AppTheme" parent="Theme.IronWatchMobile">
-        <!-- Customize default text appearances -->
-        <item name="android:textColor">@color/md_theme_onBackground</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">@font/roboto</item>
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Personalize sua cor primária -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/onPrimaryColor</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:textColor">@color/textColor</item>
     </style>
 
-    <!-- Button style -->
-    <style name="AppButton" parent="Widget.Material3.Button">
-        <item name="android:backgroundTint">@color/md_theme_primary</item>
-        <item name="android:textColor">@color/md_theme_onPrimary</item>
-    </style>
-
-    <!-- Card style -->
-    <style name="AppCard" parent="Widget.Material3.CardView">
-        <item name="cardBackgroundColor">@color/md_theme_surface</item>
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">4dp</item>
-    </style>
+    <!-- Tema alternativo, se quiser -->
+    <style name="AppTheme.Light" parent="Theme.Material3.Light.NoActionBar"/>
+    <style name="AppTheme.Dark" parent="Theme.Material3.Dark.NoActionBar"/>
 </resources>

@@ -3,7 +3,7 @@
     <application
         android:allowBackup="true"
         android:label="IronWatchMobile"
-        android:theme="@style/Theme.IronWatchMobile">
+        android:theme="@style/AppTheme">
 
         <activity
             android:name=".MainActivity"
