@@ -38,7 +38,7 @@ android {
 dependencies {
     // apenas dependências básicas do Android
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("com.google.android.material:material:1.11.0") // já tá, mas garante
+    implementation("com.google.android.material:material:1.12.0") // já tá, mas garante
     implementation("androidx.activity:activity-ktx:1.9.0") // útil pra Material3
     implementation("androidx.appcompat:appcompat:1.7.0") // pode manter
 }
