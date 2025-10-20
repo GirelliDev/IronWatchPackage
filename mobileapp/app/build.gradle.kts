@@ -1,27 +1,33 @@
+// build.gradle (Module: app)
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    id("kotlin-android")
 }
 
 android {
-    namespace = "com.girellidev.ironwatchmobile"
+    namespace = "com.seupacote.ironwatchmobile"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.girellidev.ironwatchmobile"
+        applicationId = "com.seupacote.ironwatchmobile"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            isDebuggable = true
         }
     }
 
@@ -29,16 +35,31 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
     kotlinOptions {
         jvmTarget = "17"
     }
 }
 
 dependencies {
-    // apenas dependências básicas do Android
+    // Kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+
+    // AndroidX
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("com.google.android.material:material:1.12.0") // já tá, mas garante
-    implementation("androidx.activity:activity-ktx:1.9.0") // útil pra Material3
-    implementation("androidx.appcompat:appcompat:1.7.0") // pode manter
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
+
+    // Lifecycle
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Testes
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.6")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
 }
