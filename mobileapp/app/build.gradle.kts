@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.seupacote.ironwatchmobile"
+    namespace = "com.girellidev.ironwatchmobile"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.seupacote.ironwatchmobile"
+        applicationId = "com.girellidev.ironwatchmobile"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
