@@ -8,13 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.girellidev.ironwatchmobile.ui.theme.IronWatchMobileTheme
+import com.girellidev.ironwatchmobile.ui.theme.IronWatchTheme
 
 class SuperAdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            IronWatchMobileTheme {
+            IronWatchTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text("Menu SuperAdmin", style = MaterialTheme.typography.titleLarge)

@@ -1,9 +1,20 @@
-<!-- res/values/themes.xml -->
-<resources>
-    <!-- Somente cores, sem repetir AppTheme -->
-    <color name="primaryColor">#6200EE</color>
-    <color name="primaryDarkColor">#3700B3</color>
-    <color name="onPrimaryColor">#FFFFFF</color>
-    <color name="backgroundColor">#FFFFFF</color>
-    <color name="textColor">#000000</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.IronWatch" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Cores principais -->
+        <item name="colorPrimary">@color/purple_40</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/purple_80</item>
+        <item name="colorOnPrimaryContainer">@color/black</item>
+
+        <item name="colorSecondary">@color/teal_40</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Estes aqui estavam errados -->
+        <!-- CORRIGIDO: usar android:colorBackground, não attr/colorBackground -->
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+    </style>
 </resources>

@@ -1,7 +1,8 @@
 // build.gradle.kts (Module: app)
 plugins {
     id("com.android.application")
-    id("kotlin-android")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -57,12 +58,16 @@ android {
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+     implementation ("com.google.android.material:material:1.11.0")
+     implementation ("androidx.compose.material3:material3:1.3.1")
+
+
+
 
     // AndroidX
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
 
     // Lifecycle
@@ -82,7 +87,7 @@ dependencies {
 
     // Testes
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.6")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5") // ✅ versão estável
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1") // ✅ estável
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.3")
 }
