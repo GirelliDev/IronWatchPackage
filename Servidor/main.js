@@ -1,4 +1,3 @@
-// main.js
 const net = require('net');
 const readline = require('readline');
 const db = require('./db');
@@ -29,33 +28,20 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-function genPairCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+function genPairCode(isSuper = false) {
+    if (isSuper) return '1' + Math.floor(100000 + Math.random() * 900000).toString();
+    return (Math.floor(200000 + Math.random() * 799999)).toString();
 }
 
 function questionAsync(prompt) {
-    return new Promise(resolve =>
-        rl.question(prompt, ans => resolve(ans.trim().toLowerCase() === 'exit' ? null : ans.trim()))
-    );
+    return new Promise(resolve => rl.question(prompt, ans => resolve(ans.trim().toLowerCase() === 'exit' ? null : ans.trim())));
 }
 
 function maybeRandomError(prob = 0.05) {
     if (Math.random() < prob) throw new Error("Erro interno aleatório (teste de robustez)");
 }
 
-// SuperAdmin temporário
-let superAdminCode = null;
-let superAdminTimeout = null;
-
-// Gera e exibe o código do SuperAdmin no console
-function generateSuperAdminCode() {
-    superAdminCode = genPairCode();
-    console.clear();
-    console.log(`=== SUPERADMIN CODE ===\nCódigo atual: ${superAdminCode}\nDisponível por 5 minutos!`);
-    if (superAdminTimeout) clearTimeout(superAdminTimeout);
-    superAdminTimeout = setTimeout(() => generateSuperAdminCode(), 5 * 60 * 1000);
-}
-generateSuperAdminCode(); // primeira geração
+let pendingCodes = {}; // { ipPort: { code, tipo, timer } }
 
 // --- CLI
 async function mainMenu() {
@@ -64,7 +50,7 @@ async function mainMenu() {
         "2 - Listar empresas",
         "3 - Adicionar dispositivo (normal)",
         "4 - Listar dispositivos",
-        "5 - Conectar SuperAdmin via app",
+        "5 - Adicionar SuperAdmin (dinâmico via app)",
         "6 - Sair"
     ]);
 
@@ -104,6 +90,7 @@ async function mainMenu() {
                     confirmar,
                     confirmado
                 }, apiKey);
+
                 console.clear();
                 console.log("=== Empresa Criada ===");
                 console.log({
@@ -125,43 +112,37 @@ async function mainMenu() {
             return mainMenu();
         }
         case '2': {
-            try {
-                const rows = await listCompanies();
-                console.table(rows);
-            } catch (err) {
-                console.error(err);
-            }
+            const rows = await listCompanies();
+            console.table(rows);
             return mainMenu();
         }
         case '3': {
-            try {
-                const empId = await questionAsync("Empresa ID: ");
-                if (!empId) return mainMenu();
-                const tipo = await questionAsync("Tipo (mobile/pc/other): ");
-                if (!tipo) return mainMenu();
-                const pair = genPairCode();
-                const [res] = await db.execute(
-                    "INSERT INTO Dispositivos (EmpresaID, MacIp, Tipo, PairCode, Paired) VALUES (?,?,?,?,0)",
-                    [empId, null, tipo, pair]
-                );
-                console.log("Dispositivo criado. DispId:", res.insertId, "PairCode:", pair);
-            } catch (err) {
-                console.error(err);
-            }
+            const empId = await questionAsync("Empresa ID: ");
+            if (!empId) return mainMenu();
+            const tipo = await questionAsync("Tipo (mobile/pc/other): ");
+            if (!tipo) return mainMenu();
+            const pair = genPairCode(false);
+            const [res] = await db.execute("INSERT INTO Dispositivos (EmpresaID, MacIp, Tipo, PairCode, Paired) VALUES (?,?,?,?,0)", [empId, null, tipo, pair]);
+            console.log("Dispositivo criado. DispId:", res.insertId, "PairCode:", pair);
             return mainMenu();
         }
         case '4': {
-            try {
-                const rows = await db.query("SELECT * FROM Dispositivos");
-                console.table(rows);
-            } catch (err) {
-                console.error(err);
-            }
+            const rows = await db.query("SELECT * FROM Dispositivos");
+            console.table(rows);
             return mainMenu();
         }
-        case '5':
-            console.log("SuperAdmin usa o código exibido no console para se conectar via app.");
+        case '5': {
+            const pair = genPairCode(true);
+            pendingCodes[`CLI:${Date.now()}`] = {
+                code: pair,
+                tipo: 'superadmin',
+                timer: setTimeout(() => {
+                    delete pendingCodes[`CLI:${Date.now()}`];
+                }, 5 * 60 * 1000)
+            };
+            console.log(`=== SuperAdmin Code ===\n${pair}\nValido por 5 minutos\n===================`);
             return mainMenu();
+        }
         case '6':
             process.exit(0);
         default:
@@ -179,145 +160,47 @@ const server = net.createServer(socket => {
         return;
     }
 
-    let stage = 0,
-        empresaId = null,
-        pairedDevice = null,
-        companyApiKey = null,
-        systemPrompt = null,
-        bufferPartial = '',
-        isSuperAdmin = false;
-
     socket.setEncoding('utf8');
-    socket.write("Envie EmpresaID ou 'superadmin':\n");
+    socket.write("Envie seu código:\n");
 
     socket.on('data', async chunk => {
-        bufferPartial += chunk.toString();
-        const lines = bufferPartial.split(/\r?\n/);
-        if (!bufferPartial.endsWith('\n')) bufferPartial = lines.pop();
-        else bufferPartial = '';
+        const input = chunk.toString().trim();
+        if (!input) return;
 
-        for (const raw of lines) {
-            const input = raw.trim();
-            if (!input) continue;
+        try {
+            maybeRandomError(0.05);
+        } catch (e) {
+            socket.write("Erro aleatório\n");
+            return;
+        }
 
-            try {
-                maybeRandomError(0.05);
-            } catch (e) {
-                socket.write("Erro aleatório no fluxo\n");
-                continue;
-            }
+        const pendingEntryKey = Object.keys(pendingCodes).find(k => pendingCodes[k].code === input);
+        if (!pendingEntryKey) {
+            socket.write("Código inválido\n");
+            return;
+        }
 
-            // --- SuperAdmin login via app ---
-            if (stage === 0 && input.toLowerCase() === 'superadmin') {
-                socket.write("Digite o código do SuperAdmin exibido no console:\n");
-                stage = 20;
-                continue;
-            }
-            if (stage === 20) {
-                if (input === superAdminCode) {
-                    // registra no banco
-                    const [res] = await db.execute(
-                        "INSERT INTO SuperAdminDevices (PairCode, Paired, MacIp) VALUES (?,?,?)",
-                        [input, 1, `${ip}:${port}`]
-                    );
-                    isSuperAdmin = true;
-                    stage = 11;
-                    socket.write(`SuperAdmin registrado com sucesso! SuperID: ${res.insertId}\n`);
-                    socket.write("Menu SuperAdmin:\n1-Listar empresas\n2-Listar dispositivos\n3-Criar empresa\n4-Adicionar dispositivo\n0-Sair\n");
-                } else {
-                    socket.write("Código incorreto. Tente novamente.\n");
-                    socket.destroy();
-                    resetRateLimit(ip);
-                }
-                continue;
-            }
+        const entry = pendingCodes[pendingEntryKey];
 
-            // --- SuperAdmin já conectado ---
-            if (stage === 11 && isSuperAdmin) {
-                switch (input) {
-                    case '1': {
-                        const empresas = await listCompanies();
-                        socket.write(JSON.stringify(empresas, null, 2) + '\n');
-                        break;
-                    }
-                    case '2': {
-                        const devs = await db.query("SELECT * FROM Dispositivos");
-                        socket.write(JSON.stringify(devs, null, 2) + '\n');
-                        break;
-                    }
-                    case '3':
-                        socket.write("Criação de empresa via SuperAdmin (receber dados via app)\n");
-                        break;
-                    case '4':
-                        socket.write("Adicionar dispositivo via SuperAdmin (receber dados via app)\n");
-                        break;
-                    case '0':
-                        socket.write("Desconectando SuperAdmin...\n");
-                        socket.destroy();
-                        resetRateLimit(ip);
-                        return;
-                    default:
-                        socket.write("Opção inválida\n");
-                }
-                continue;
+        if (entry.tipo === 'superadmin') {
+            await db.execute("INSERT INTO SuperAdminDevices (PairCode, Paired, MacIp) VALUES (?,?,?)", [input, 1, `${ip}:${port}`]);
+            clearTimeout(entry.timer);
+            delete pendingCodes[pendingEntryKey];
+            socket.write("SuperAdmin registrado com sucesso\n");
+        } else if (entry.tipo === 'device') {
+            const [devRows] = await db.query("SELECT * FROM Dispositivos WHERE PairCode=? AND Paired=0 LIMIT 1", [input]);
+            if (devRows.length === 0) {
+                socket.write("PairCode inválido ou já usado\n");
+                return;
             }
-
-            // --- Dispositivo normal ---
-            if (stage === 0) {
-                const [rows] = await db.query("SELECT PromptIA, API_KEY FROM Empresas WHERE ID=?", [input]);
-                if (rows.length === 0) {
-                    socket.write("Empresa não encontrada\n");
-                    socket.destroy();
-                    resetRateLimit(ip);
-                    return;
-                }
-                empresaId = input;
-                companyApiKey = rows[0].API_KEY;
-                systemPrompt = rows[0].PromptIA;
-                stage = 1;
-                socket.write("Empresa encontrada. Envie PairCode:\n");
-                continue;
-            }
-            if (stage === 1) {
-                const [devRows] = await db.query("SELECT * FROM Dispositivos WHERE EmpresaID=? AND PairCode=? AND Paired=0 LIMIT 1", [empresaId, input]);
-                if (devRows.length === 0) {
-                    socket.write("PairCode inválido ou já usado\n");
-                    socket.destroy();
-                    resetRateLimit(ip);
-                    return;
-                }
-                const disp = devRows[0];
-                const macIp = `${ip}:${port}`;
-                await db.execute("UPDATE Dispositivos SET Paired=1, MacIp=? WHERE DispId=?", [macIp, disp.DispId]);
-                pairedDevice = {
-                    ...disp,
-                    MacIp: macIp,
-                    Paired: 1
-                };
-                stage = 2;
-                socket.write(`Pareado com sucesso. ID: ${disp.DispId}\nEnvie mensagens (exit para sair):\n`);
-                continue;
-            }
-            if (stage === 2) {
-                if (input.toLowerCase() === 'exit') {
-                    socket.write("Desconectando...\n");
-                    socket.destroy();
-                    resetRateLimit(ip);
-                    return;
-                }
-                const aiResp = await queryOpenAI(input, companyApiKey, {
-                    systemPrompt
-                });
-                socket.write(`IA: ${aiResp}\n`);
-                await logReceived(empresaId, pairedDevice.MacIp, 'Device', input);
-                await sendAnalytics({
-                    empresaId,
-                    ip: pairedDevice.MacIp,
-                    texto: input,
-                    aiResp,
-                    timestamp: new Date()
-                });
-            }
+            const dev = devRows[0];
+            const macIp = `${ip}:${port}`;
+            await db.execute("UPDATE Dispositivos SET Paired=1, MacIp=? WHERE DispId=?", [macIp, dev.DispId]);
+            clearTimeout(entry.timer);
+            delete pendingCodes[pendingEntryKey];
+            socket.write(`Pareado com sucesso. ID: ${dev.DispId}\n`);
+        } else {
+            socket.write("Tipo de código desconhecido\n");
         }
     });
 
