@@ -7,10 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import java.io.PrintWriter
 import java.net.Socket
+import java.net.InetAddress
 
 @Composable
 fun CodeScreen(
@@ -22,18 +24,22 @@ fun CodeScreen(
     var code by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
 
-    suspend fun sendCodeToServer(code: String) {
-        withContext(Dispatchers.IO) {
+    fun sendCodeToServer(code: String) {
+        scope.launch(Dispatchers.IO) {
             try {
+                // Pega IP local e concatena com porta
+                val localIp = InetAddress.getLocalHost().hostAddress
+                val ipWithPort = "$localIp:$serverPort"
+
                 Socket(serverIp, serverPort).use { socket ->
                     val writer = PrintWriter(socket.getOutputStream(), true)
                     val reader = socket.getInputStream().bufferedReader()
 
-                    // envia código pro servidor, tipo não importa, servidor valida pendingCodes
-                    writer.println(code)
+                    // envia IP:Porta + código pro servidor
+                    writer.println("$ipWithPort|$code")
 
-                    // lê resposta do servidor
                     val response = reader.readLine() ?: "Nenhuma resposta do servidor"
 
                     when {
@@ -82,7 +88,7 @@ fun CodeScreen(
                 if (code.isNotBlank() && !loading) {
                     loading = true
                     message = ""
-                    LaunchedEffect(code) { sendCodeToServer(code) }
+                    sendCodeToServer(code)
                 }
             },
             modifier = Modifier.fillMaxWidth(),
