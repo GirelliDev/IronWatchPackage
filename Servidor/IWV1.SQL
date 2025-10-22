@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS Empresas (
     QuantidadeDispositivos INT DEFAULT 5,
     Email VARCHAR(255) NOT NULL,
     PromptIA TEXT NOT NULL,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `is_active` enum('0', '1') DEFAULT 1
 );
 
 -- Tabela de Dispositivos
