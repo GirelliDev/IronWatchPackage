@@ -1,35 +1,138 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronWatchAdmin</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<title>IronWatchAdmin</title>
+<style>
+</style>
 </head>
 <body>
-    <header class="header">
-        <h1 class="TituloAPP">IronWatchAdmin</h1>
-    </header>
+<header class="header">
+    <h1 class="TituloAPP">IronWatchAdmin</h1>
+    <button class="menu-btn">&#9776;</button>
+</header>
 
-    <aside class="sidebar">
-        <nav>
-            <ul>
-                <li><a href="#" data-page="dashboard">Dashboard</a></li>
-                <li><a href="#" data-page="create-company">Criar Empresa</a></li>
-                <li><a href="#" data-page="edit-company">Editar Empresa</a></li>
-                <li><a href="#" data-page="add-devices">Adicionar Dispositivos</a></li>
-            </ul>
-        </nav>
-    </aside>
+<aside class="sidebar closed">
+    <nav>
+        <ul>
+            <li><a href="#" data-page="dashboard">Dashboard</a></li>
+            <li><a href="#" data-page="create-company">Criar Empresa</a></li>
+            <li><a href="#" data-page="edit-company">Editar Empresa</a></li>
+            <li><a href="#" data-page="add-devices">Adicionar Dispositivos</a></li>
+        </ul>
+    </nav>
+</aside>
 
-    <main class="content">
-        <!-- Aqui vai renderizar o conteúdo das telas -->
-        <div id="page-container">
-            <h2>Bem-vindo ao IronWatch Admin</h2>
-            <p>Selecione uma opção no menu para começar.</p>
-        </div>
-    </main>
+<main class="content full">
+    <div id="page-container">
+        <h2>Bem-vindo ao IronWatch Admin</h2>
+        <p>Selecione uma opção no menu para começar.</p>
+    </div>
+</main>
 
-    <script src="app.js"></script>
+<script>
+// ---------- JS APP ----------
+document.addEventListener("DOMContentLoaded", () => {
+    const sidebar = document.querySelector(".sidebar");
+    const content = document.querySelector(".content");
+    const btn = document.querySelector(".menu-btn");
+    const pageContainer = document.getElementById("page-container");
+    const menuLinks = document.querySelectorAll(".sidebar nav a");
+    const SERVER_IP = "192.168.0.10"; // coloque IP real do servidor
+    const SERVER_PORT = "9999";
+
+    // --- TOGGLE SIDEBAR ---
+    btn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        sidebar.classList.toggle("closed");
+        content.classList.toggle("full");
+    });
+
+    // --- SPA RENDER ---
+    function renderPage(page) {
+        switch(page) {
+            case "dashboard": pageContainer.innerHTML = dashboardPage(); break;
+            case "create-company": pageContainer.innerHTML = createCompanyPage(); break;
+            case "edit-company": pageContainer.innerHTML = editCompanyPage(); break;
+            case "add-devices": pageContainer.innerHTML = addDevicesPage(); break;
+            default: pageContainer.innerHTML = "<h2>Bem-vindo ao IronWatch Admin</h2><p>Selecione uma opção.</p>";
+        }
+    }
+
+    menuLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            renderPage(link.dataset.page);
+            if(window.innerWidth <= 768){
+                sidebar.classList.remove("open"); sidebar.classList.add("closed"); content.classList.add("full");
+            }
+        });
+    });
+
+    // --- TELAS ---
+    function dashboardPage() {
+        return `<h2>Dashboard</h2><p>Visão geral das empresas, dispositivos e notificações.</p>`;
+    }
+
+    function createCompanyPage() {
+        return `
+            <h2>Criar Empresa</h2>
+            <form id="create-company-form">
+                <input type="text" id="name" placeholder="Nome da Empresa" required />
+                <input type="email" id="email" placeholder="Email da Empresa" required />
+                <input type="text" id="apiKey" placeholder="API Key" required />
+                <textarea id="promptIA" placeholder="Prompt IA"></textarea>
+                <textarea id="welcomeMsg" placeholder="Mensagem de Boas-vindas"></textarea>
+                <textarea id="reminderMsg" placeholder="Mensagem de Lembrete"></textarea>
+                <textarea id="confirmMsg" placeholder="Mensagem de Confirmação"></textarea>
+                <textarea id="confirmedMsg" placeholder="Mensagem Confirmada"></textarea>
+                <button type="submit">Criar Empresa</button>
+            </form>
+        `;
+    }
+
+    function editCompanyPage() {
+        return `<h2>Editar Empresa</h2><p>Selecione a empresa que deseja editar e modifique os dados.</p>`;
+    }
+
+    function addDevicesPage() {
+        return `<h2>Adicionar Dispositivos</h2><p>Gerencie e adicione dispositivos para cada empresa.</p>`;
+    }
+
+    renderPage("dashboard");
+
+    // --- CONEXÃO COM SERVIDOR ---
+    document.addEventListener("submit", async (e) => {
+        if(e.target.id === "create-company-form"){
+            e.preventDefault();
+            const data = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                apiKey: document.getElementById("apiKey").value,
+                promptIA: document.getElementById("promptIA").value,
+                welcomeMsg: document.getElementById("welcomeMsg").value,
+                reminderMsg: document.getElementById("reminderMsg").value,
+                confirmMsg: document.getElementById("confirmMsg").value,
+                confirmedMsg: document.getElementById("confirmedMsg").value,
+            };
+
+            try {
+                const response = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/create-company`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                alert("Empresa criada com sucesso!");
+                renderPage("dashboard");
+            } catch(err){
+                alert("Erro ao criar empresa: " + err);
+            }
+        }
+    });
+});
+</script>
 </body>
 </html>
