@@ -4,7 +4,7 @@ import string
 import time
 import json
 from typing import Optional, List
-import aiomysql  # async MySQL driver
+import aiomysql 
 
 APP_TOKEN: Optional[str] = None
 EXPIRA_EM: float = 0.0
@@ -15,8 +15,8 @@ DEFAULT_PORT = 9999
 TOKEN_TTL = 5 * 60  # 5 minutos
 
 # ---------- Logs / Histórico ----------
-REQUEST_LOG: List[str] = []      # guarda cada request recebida (string)
-#CODES_GENERATED: List[str] = []  # guarda todos os códigos já gerados
+REQUEST_LOG: List[str] = [] 
+#CODES_GENERATED: List[str] = []  
 
 # ---------- DB ----------
 db_pool: Optional[aiomysql.Pool] = None
@@ -46,7 +46,6 @@ def gerar_token():
     print(f"[TOKEN] Novo token: {APP_TOKEN} (expira em {time.strftime('%H:%M:%S', time.localtime(EXPIRA_EM))})")
     #print(f"[HIST] Tokens gerados: {CODES_GENERATED}")
 
-# ---------- Loop que renova token automaticamente ----------
 async def token_loop():
     gerar_token()
     while True:
@@ -54,7 +53,6 @@ async def token_loop():
         if time.time() >= EXPIRA_EM:
             gerar_token()
 
-# ---------- CRUD Empresas ----------
 async def add_company(data: dict) -> int:
     async with db_pool.acquire() as conn:
         async with conn.cursor() as cur:
@@ -135,12 +133,12 @@ async def update_company(data: dict) -> bool:
             await conn.commit()
             return True
 
-# ---------- Handler TCP ----------
+
 async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info('peername')
     print(f"[CONEXÃO] {addr}")
 
-    # Envia token
+    
     if APP_TOKEN is not None:
         writer.write((json.dumps({"action":"new-token","token":APP_TOKEN})+"\n").encode())
         await writer.drain()
@@ -155,7 +153,7 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             REQUEST_LOG.append(log_entry)
             print(f"[RECV] {log_entry}")
 
-            # tenta parse
+            
             try:
                 msg = json.loads(s)
             except Exception:
@@ -163,13 +161,13 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
                 await writer.drain()
                 continue
 
-            # valida token
+           
             if msg.get("token") != APP_TOKEN:
                 writer.write(json.dumps({"success": False, "message": "Token inválido"})+"\n".encode())
                 await writer.drain()
                 continue
 
-            # processa ação
+            
             try:
                 action = msg.get("action")
                 data_payload = msg.get("data", {})
