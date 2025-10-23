@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#5B5B5B"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:background="#383838"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:text="IronWatch Admin"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Material.Display1"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
+
+    <!-- Caixa do login -->
+
+    <TextView
+
+        android:id="@+id/textView"
+        android:layout_width="367dp"
+        android:layout_height="77dp"
+        android:layout_marginTop="210dp"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:text="Insira o Codigo Fornecido pelo Servidor"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/loginbox"
+        android:layout_width="354dp"
+        android:layout_height="242dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_loginbox"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <EditText
+            android:id="@+id/codigoInput"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_edittext"
+            android:hint="Código"
+            android:inputType="text"
+            android:padding="12dp"
+            android:textColor="#ffffff"
+            android:textColorHint="#AAAAAA" />
+
+        <Button
+            android:id="@+id/btnEnviar"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="#D32F2F"
+            android:fontFamily="@font/roboto_mono_bold"
+            android:text="Enviar"
+            android:textAllCaps="false"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+<TextView
+    android:id="@+id/Creditos"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:layout_gravity="bottom"
+    android:gravity="center"
+    android:layout_marginTop="250dp"
+    android:text="Produzido por GirelliDev"
+    android:textAlignment="center"
+    android:textColor="#ffffff"
+    android:textStyle="bold" />
+
+
+
+</LinearLayout>

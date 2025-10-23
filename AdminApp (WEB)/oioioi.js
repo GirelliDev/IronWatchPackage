@@ -1,3 +1,4 @@
+// @ts-nocheck
 document.addEventListener("DOMContentLoaded", () => {
     const SERVER_IP = "localhost";
     const SERVER_PORT = "9999";
