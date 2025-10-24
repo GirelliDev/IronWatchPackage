@@ -60,7 +60,7 @@ class DashboardActivity : AppCompatActivity() {
                     val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
 
                     val request = JSONObject()
-                    request.put("token", "Colocar_a_merda_do_token_aqui_gordao")
+                    request.put("token", "IronWatchSA")
                     request.put("action", "list-companies")
                     writer.write(request.toString() + "\n")
                     writer.flush()

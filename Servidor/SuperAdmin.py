@@ -7,21 +7,17 @@ from typing import Optional, List
 import aiomysql
 from datetime import datetime
 
+# ---------- Variáveis globais ----------
 APP_TOKEN: Optional[str] = None
 EXPIRA_EM: float = 0.0
-
-# ---------- Config ----------
-DEFAULT_HOST = "0.0.0.0"
-DEFAULT_PORT = 9999
 TOKEN_TTL = 5 * 60  # 5 minutos
-
-# ---------- Logs / Histórico ----------
 REQUEST_LOG: List[str] = []
-
-# ---------- DB ----------
 db_pool: Optional[aiomysql.Pool] = None
 
+DEFAULT_HOST = "0.0.0.0"
+DEFAULT_PORT = 9999
 
+# ---------- DB ----------
 async def init_db():
     global db_pool
     db_pool = await aiomysql.create_pool(
@@ -34,19 +30,16 @@ async def init_db():
     )
     print("[DB] Conectado ao MySQL")
 
-
-# ---------- Gerador de token ----------
+# ---------- Token rotativo ----------
 def gen_pair_code() -> str:
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
     return ''.join(random.choice(chars) for _ in range(6))
-
 
 def gerar_token():
     global APP_TOKEN, EXPIRA_EM
     APP_TOKEN = gen_pair_code()
     EXPIRA_EM = time.time() + TOKEN_TTL
     print(f"[TOKEN] Novo token: {APP_TOKEN} (expira em {time.strftime('%H:%M:%S', time.localtime(EXPIRA_EM))})")
-
 
 async def token_loop():
     gerar_token()
@@ -55,8 +48,7 @@ async def token_loop():
         if time.time() >= EXPIRA_EM:
             gerar_token()
 
-
-# ---------- Banco: registro de dispositivo ----------
+# ---------- Registro de dispositivo ----------
 async def registrar_dispositivo(data: dict, addr):
     ip = addr[0] if isinstance(addr, tuple) else str(addr)
     mac = data.get("mac_address")
@@ -73,7 +65,6 @@ async def registrar_dispositivo(data: dict, addr):
             """, (nome_host, mac, ip, datetime.now(), APP_TOKEN))
             await conn.commit()
             print(f"[AUTH] Dispositivo registrado: {nome_host} ({mac}) - {ip}")
-
 
 # ---------- CRUD Empresa ----------
 async def add_company(data: dict) -> int:
@@ -102,13 +93,11 @@ async def add_company(data: dict) -> int:
             await conn.commit()
             return empresa_id
 
-
 async def list_companies():
     async with db_pool.acquire() as conn:
         async with conn.cursor(aiomysql.DictCursor) as cur:
             await cur.execute("SELECT * FROM Empresas")
             return await cur.fetchall()
-
 
 async def get_company_full(id: int):
     async with db_pool.acquire() as conn:
@@ -129,7 +118,6 @@ async def get_company_full(id: int):
                 elif ph["Tipo"] == "confirmado":
                     empresa["confirmedMsg"] = ph["Texto"]
             return empresa
-
 
 async def update_company(data: dict) -> bool:
     async with db_pool.acquire() as conn:
@@ -159,49 +147,41 @@ async def update_company(data: dict) -> bool:
             await conn.commit()
             return True
 
-
 # ---------- Cliente ----------
 async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info("peername")
     print(f"[CONEXÃO] {addr}")
 
-    if APP_TOKEN is not None:
-        writer.write((json.dumps({"action": "new-token", "token": APP_TOKEN}) + "\n").encode())
-        await writer.drain()
-
     try:
         while not reader.at_eof():
             data = await reader.readline()
-            if not data:
-                break
-
-            # converte bytes -> str
+            if not data: break
             s = data.decode(errors="ignore").rstrip()
-            log_entry = f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {addr} - {s}"
-            REQUEST_LOG.append(log_entry)
-            print(f"[RECV] {log_entry}")
+            REQUEST_LOG.append(f"{datetime.now()} - {addr} - {s}")
+            msg = json.loads(s)
 
-            try:
-                msg = json.loads(s)
-            except Exception:
-                writer.write((json.dumps({"success": False, "message": "JSON inválido"}) + "\n").encode())
+            # --- ação de token novo ---
+            if msg.get("action") == "new-token":
+                writer.write((json.dumps({"success": True, "token": APP_TOKEN}) + "\n").encode())
                 await writer.drain()
                 continue
 
+            # --- valida token ---
             if msg.get("token") != APP_TOKEN:
                 writer.write((json.dumps({"success": False, "message": "Token inválido"}) + "\n").encode())
                 await writer.drain()
                 continue
 
-            # Autentica e registra dispositivo
+            # --- registra dispositivo ---
             if "device" in msg:
                 await registrar_dispositivo(msg["device"], addr)
 
-            try:
-                action = msg.get("action")
-                data_payload = msg.get("data", {})
-                response = {"success": True}
+            # --- ações CRUD ---
+            action = msg.get("action")
+            data_payload = msg.get("data", {})
+            response = {"success": True}
 
+            try:
                 if action == "list-companies":
                     response["companies"] = await list_companies()
                 elif action == "create-company":
@@ -218,13 +198,10 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
             except Exception as e:
                 writer.write((json.dumps({"success": False, "message": str(e)}) + "\n").encode())
                 await writer.drain()
-    except Exception as e:
-        print(f"[ERRO] client {addr}: {e}")
     finally:
         writer.close()
         await writer.wait_closed()
         print(f"[DESCONEXÃO] {addr}")
-
 
 # ---------- Inicialização ----------
 async def start_server_async(host=DEFAULT_HOST, port=DEFAULT_PORT):
@@ -235,10 +212,8 @@ async def start_server_async(host=DEFAULT_HOST, port=DEFAULT_PORT):
     async with server:
         await server.serve_forever()
 
-
 def start_server(host=DEFAULT_HOST, port=DEFAULT_PORT):
     asyncio.run(start_server_async(host, port))
-
 
 if __name__ == "__main__":
     print("[BOOT] Iniciando Servidor SuperAdmin IronWatch | GirelliDev")
