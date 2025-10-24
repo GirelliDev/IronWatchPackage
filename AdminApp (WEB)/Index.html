@@ -7,6 +7,553 @@
     <link rel="stylesheet" href="style.css">
     <title>IronWatchAdmin</title>
 </head>
+<style>
+    /* ---------- RESET GLOBAL ---------- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #0f0f0f;
+        color: #eee;
+    }
+
+    /* ---------- HEADER ---------- */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(90deg, #1a1a1a, #2a0000);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    .TituloAPP {
+        font-size: 22px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 28px;
+        cursor: pointer;
+        transition: transform 0.2s ease, color 0.3s ease;
+    }
+
+    .menu-btn:hover {
+        color: #ff3b3b;
+        transform: scale(1.1);
+    }
+
+    /* ---------- SIDEBAR ---------- */
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 240px;
+        height: calc(100% - 60px);
+        background: linear-gradient(180deg, #181818, #1e1e1e);
+        border-right: 1px solid #2a2a2a;
+        padding: 20px;
+        overflow-y: auto;
+        transition: all 0.3s ease;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.4);
+        z-index: 900;
+    }
+
+    .sidebar.closed {
+        left: -260px;
+    }
+
+    .sidebar nav ul {
+        list-style: none;
+    }
+
+    .sidebar nav ul li {
+        margin-bottom: 15px;
+    }
+
+    .sidebar nav ul li a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        padding: 10px 14px;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+    }
+
+    .sidebar nav ul li a:hover {
+        background: linear-gradient(90deg, #9b0000, #c30000);
+        color: #fff;
+        box-shadow: 0 0 8px rgba(203, 0, 0, 0.4);
+    }
+
+    /* ---------- CONTEÚDO PRINCIPAL ---------- */
+    .content {
+        margin-left: 240px;
+        /* largura da sidebar */
+        margin-top: 60px;
+        /* altura do header */
+        padding: 30px;
+        flex: 1;
+        overflow-y: auto;
+        background: #121212;
+        transition: all 0.3s ease;
+    }
+
+    .content.full {
+        margin-left: 0;
+    }
+
+    h2 {
+        margin-bottom: 15px;
+        font-size: 26px;
+        color: #fff;
+    }
+
+    p {
+        margin-bottom: 15px;
+        font-size: 16px;
+        color: #bbb;
+    }
+
+    /* ---------- DASHBOARD - BLOCO EMPRESAS ---------- */
+    #companies-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    #companies-list>div {
+        position: relative;
+        /* não absolute/fixed */
+        padding: 10px 15px;
+        border-radius: 8px;
+        min-width: 200px;
+        flex: 1;
+        background: #1e1e1e;
+        /* escuro */
+        border: 1px solid #333;
+        color: #eee;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Status dot */
+    .status-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+    }
+
+    /* ---------- FORMULÁRIOS ---------- */
+    form {
+        background: #1a1a1a;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+        max-width: 600px;
+    }
+
+    input,
+    textarea {
+        display: block;
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #333;
+        background-color: #202020;
+        color: #fff;
+        font-size: 14px;
+        resize: vertical;
+        transition: all 0.25s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #c30000;
+        background-color: #2a2a2a;
+        box-shadow: 0 0 6px rgba(195, 0, 0, 0.6);
+    }
+
+    /* ---------- BOTÕES ---------- */
+    button {
+        background: linear-gradient(90deg, #9b0000, #c30000);
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(155, 0, 0, 0.3);
+    }
+
+    /* ---------- SCROLLBAR CUSTOM ---------- */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #121212;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #9b0000;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #c30000;
+    }
+
+    /* ---------- LOGIN ---------- */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: radial-gradient(circle at center, #1a1a1a, #0a0a0a);
+    }
+
+    .login-box {
+        background: #181818;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        width: 320px;
+    }
+
+    .login-box h2 {
+        margin-bottom: 10px;
+    }
+
+    .login-box p {
+        color: #aaa;
+        margin-bottom: 20px;
+    }
+
+    .login-box input {
+        margin-bottom: 15px;
+    }
+
+    .login-box button {
+        width: 100%;
+    }
+
+    /* ---------- RESPONSIVIDADE ---------- */
+    @media (max-width: 768px) {
+        .sidebar {
+            left: -260px;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .content {
+            margin-left: 0;
+        }
+
+        .header {
+            justify-content: space-between;
+        }
+    }
+
+    :root {
+        --vermelho: #c30000;
+        --vermelho-escuro: #9b0000;
+        --cinza-escuro: #121212;
+        --cinza-medio: #1a1a1a;
+        --cinza-claro: #2a2a2a;
+        --branco: #eee;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", "Roboto", sans-serif;
+    }
+
+    body {
+        background-color: var(--cinza-escuro);
+        color: var(--branco);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* HEADER */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(90deg, var(--cinza-medio), #200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 25px;
+        z-index: 10;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .TituloAPP {
+        font-size: 22px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #fff;
+    }
+
+    .menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 26px;
+        cursor: pointer;
+        transition: transform 0.2s ease, color 0.3s ease;
+    }
+
+    .menu-btn:hover {
+        color: var(--vermelho);
+        transform: scale(1.1);
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: linear-gradient(180deg, #181818, #111);
+        border-right: 1px solid #1f1f1f;
+        padding: 20px;
+        overflow-y: auto;
+        transition: 0.3s ease;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar.closed {
+        transform: translateX(-260px);
+    }
+
+    .sidebar nav ul {
+        list-style: none;
+    }
+
+    .sidebar nav ul li {
+        margin-bottom: 15px;
+    }
+
+    .sidebar nav ul li a {
+        display: block;
+        color: #ccc;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 10px 14px;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+    }
+
+    .sidebar nav ul li a:hover {
+        background: linear-gradient(90deg, var(--vermelho-escuro), var(--vermelho));
+        color: #fff;
+        box-shadow: 0 0 8px rgba(195, 0, 0, 0.4);
+    }
+
+    /* CONTENT */
+    .content {
+        margin-left: 250px;
+        margin-top: 60px;
+        flex: 1;
+        padding: 30px;
+        background: var(--cinza-escuro);
+        overflow-y: auto;
+        transition: all 0.3s ease;
+    }
+
+    .content.full {
+        margin-left: 0;
+    }
+
+    h2 {
+        font-size: 26px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #2a2a2a;
+        padding-bottom: 8px;
+    }
+
+    /* FORM */
+    form {
+        background: var(--cinza-medio);
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        max-width: 650px;
+    }
+
+    input,
+    textarea,
+    select {
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #333;
+        background-color: #202020;
+        color: #fff;
+        font-size: 14px;
+        transition: all 0.25s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: var(--vermelho);
+        background-color: #2a2a2a;
+        box-shadow: 0 0 6px rgba(195, 0, 0, 0.6);
+    }
+
+    /* BOTÕES */
+    button {
+        background: linear-gradient(90deg, var(--vermelho-escuro), var(--vermelho));
+        color: #fff;
+        border: none;
+        font-weight: bold;
+        font-size: 15px;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        background: linear-gradient(90deg, var(--vermelho), #ff4545);
+        transform: scale(1.02);
+    }
+
+    button:disabled {
+        background: #333;
+        cursor: not-allowed;
+    }
+
+    /* SWITCH */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 26px;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #a00;
+        transition: 0.4s;
+        border-radius: 26px;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+    }
+
+    input:checked+.slider {
+        background-color: #1db954;
+    }
+
+    input:checked+.slider:before {
+        transform: translateX(24px);
+    }
+
+    /* LOGIN */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: radial-gradient(circle at center, #1a1a1a, #0a0a0a);
+    }
+
+    .login-box {
+        background: #181818;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+        width: 320px;
+    }
+
+    .login-box h2 {
+        margin-bottom: 10px;
+    }
+
+    .login-box input {
+        margin-bottom: 15px;
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-260px);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .content {
+            margin-left: 0;
+        }
+    }
+</style>
 
 <body>
     <header class="header">
@@ -29,7 +576,277 @@
         <div id="page-container"></div>
     </main>
 
-    <script src="oioioi.js"></script>
+    <script>
+        // @ts-nocheck
+        document.addEventListener("DOMContentLoaded", () => {
+            const SERVER_IP = "localhost";
+            const SERVER_PORT = "9999";
+            const sidebar = document.querySelector(".sidebar");
+            const content = document.querySelector(".content");
+            const btn = document.querySelector(".menu-btn");
+            const pageContainer = document.getElementById("page-container");
+
+            const token = localStorage.getItem("appToken");
+            if (!token) {
+                renderLogin();
+            } else {
+                initApp();
+            }
+
+            function renderLogin() {
+                document.body.innerHTML = `
+            <div class="login-container">
+                <div class="login-box">
+                    <h2>Primeiro Acesso</h2>
+                    <p>Insira o App Token para acessar o sistema.</p>
+                    <input type="password" id="tokenInput" placeholder="App Token">
+                    <button id="loginBtn">Entrar</button>
+                </div>
+            </div>
+        `;
+                document.getElementById("loginBtn").addEventListener("click", () => {
+                    const tokenValue = document.getElementById("tokenInput").value.trim();
+                    if (!tokenValue) {
+                        alert("Digite o token para continuar.");
+                        return;
+                    }
+                    localStorage.setItem("appToken", tokenValue);
+                    location.reload();
+                });
+            }
+
+            function initApp() {
+                btn.addEventListener("click", () => {
+                    sidebar.classList.toggle("open");
+                    sidebar.classList.toggle("closed");
+                    content.classList.toggle("full");
+                });
+
+                const menuLinks = document.querySelectorAll(".sidebar nav a");
+                menuLinks.forEach(link => {
+                    link.addEventListener("click", e => {
+                        e.preventDefault();
+                        renderPage(link.dataset.page);
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove("open");
+                            sidebar.classList.add("closed");
+                            content.classList.add("full");
+                        }
+                    });
+                });
+
+                renderPage("dashboard");
+            }
+
+            function renderPage(page) {
+                switch (page) {
+                    case "dashboard":
+                        pageContainer.innerHTML = dashboardPage();
+                        setTimeout(loadCompanies, 50);
+                        break;
+                    case "create-company":
+                        pageContainer.innerHTML = createCompanyPage();
+                        break;
+                    case "edit-company":
+                        pageContainer.innerHTML = editCompanyPage();
+                        setTimeout(loadCompaniesForEdit, 50);
+                        break;
+                    case "add-devices":
+                        pageContainer.innerHTML = addDevicesPage();
+                        break;
+                    default:
+                        pageContainer.innerHTML = "<h2>Bem-vindo ao IronWatch Admin</h2>";
+                }
+            }
+
+            function dashboardPage() {
+                return `
+            <h2>Dashboard</h2>
+            <div id="companies-list" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+        `;
+            }
+
+            async function loadCompanies() {
+                const container = document.getElementById("companies-list");
+                if (!container) return;
+                try {
+                    const res = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/list-companies`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("appToken")}`
+                        }
+                    });
+                    const companies = await res.json();
+                    container.innerHTML = "";
+                    companies.forEach(c => {
+                        const div = document.createElement("div");
+                        div.style.background = "#1e1e1e";
+                        div.style.padding = "10px 15px";
+                        div.style.borderRadius = "8px";
+                        div.style.minWidth = "200px";
+                        div.style.position = "relative";
+                        div.innerHTML = `<strong>${c.Nome}</strong>`;
+                        const dot = document.createElement("div");
+                        dot.style.width = "10px";
+                        dot.style.height = "10px";
+                        dot.style.borderRadius = "50%";
+                        dot.style.position = "absolute";
+                        dot.style.top = "50%";
+                        dot.style.right = "10px";
+                        dot.style.transform = "translateY(-50%)";
+                        dot.style.background = c.is_active == 1 ? "green" : "red";
+                        div.appendChild(dot);
+                        container.appendChild(div);
+                    });
+                } catch {
+                    container.innerHTML = "<p>Erro ao carregar empresas.</p>";
+                }
+            }
+
+            function createCompanyPage() {
+                return `
+            <h2>Criar Empresa</h2>
+            <form id="create-company-form">
+                <input id="name" placeholder="Nome" required>
+                <input id="email" type="email" placeholder="Email" required>
+                <input id="apiKey" placeholder="API Key" required>
+                <textarea id="promptIA" placeholder="Prompt IA"></textarea>
+                <textarea id="welcomeMsg" placeholder="Mensagem de Boas-vindas"></textarea>
+                <textarea id="reminderMsg" placeholder="Mensagem de Lembrete"></textarea>
+                <textarea id="confirmMsg" placeholder="Mensagem de Confirmação"></textarea>
+                <textarea id="confirmedMsg" placeholder="Mensagem Confirmada"></textarea>
+                <button type="submit">Criar</button>
+            </form>
+        `;
+            }
+
+            function editCompanyPage() {
+                return `
+            <h2>Editar Empresa</h2>
+            <select id="companySelect"><option>Carregando...</option></select>
+            <div id="editFormContainer" style="margin-top:20px;"></div>
+        `;
+            }
+
+            async function loadCompaniesForEdit() {
+                const select = document.getElementById("companySelect");
+                try {
+                    const res = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/list-companies`, {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("appToken")}`
+                        }
+                    });
+                    const companies = await res.json();
+                    select.innerHTML = `<option value="">Selecione uma empresa</option>` +
+                        companies.map(c => `<option value="${c.id}">${c.Nome}</option>`).join("");
+
+                    select.addEventListener("change", async () => {
+                        const id = select.value;
+                        if (!id) return document.getElementById("editFormContainer").innerHTML = "";
+
+                        const resp = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/get-company-full/${id}`, {
+                            headers: {
+                                "Authorization": `Bearer ${localStorage.getItem("appToken")}`
+                            }
+                        });
+                        const company = await resp.json();
+                        renderEditForm(company);
+                    });
+                } catch {
+                    select.innerHTML = `<option>Erro ao carregar</option>`;
+                }
+            }
+
+            function renderEditForm(company) {
+                const container = document.getElementById("editFormContainer");
+                container.innerHTML = `
+            <input id="editName" value="${company.Nome}" placeholder="Nome">
+            <input id="editEmail" type="email" value="${company.Email}" placeholder="Email">
+            <input id="editApiKey" value="${company.API_KEY || ''}" placeholder="API Key">
+            <textarea id="editPromptIA" placeholder="Prompt IA">${company.PromptIA || ''}</textarea>
+            <textarea id="editWelcomeMsg" placeholder="Mensagem de Boas-vindas">${company.welcomeMsg || ''}</textarea>
+            <textarea id="editReminderMsg" placeholder="Mensagem de Lembrete">${company.reminderMsg || ''}</textarea>
+            <textarea id="editConfirmMsg" placeholder="Mensagem de Confirmação">${company.confirmMsg || ''}</textarea>
+            <textarea id="editConfirmedMsg" placeholder="Mensagem Confirmada">${company.confirmedMsg || ''}</textarea>
+
+            <label style="display:flex;align-items:center;gap:10px;">
+                <span>Ativa:</span>
+                <label class="switch">
+                    <input type="checkbox" id="editActive" ${company.is_active == 1 ? "checked" : ""}>
+                    <span class="slider"></span>
+                </label>
+            </label>
+
+            <button id="saveBtn">Salvar</button>
+        `;
+
+                const activeSwitch = document.getElementById("editActive");
+
+                document.getElementById("saveBtn").addEventListener("click", async () => {
+                    const updated = {
+                        id: company.id,
+                        Nome: document.getElementById("editName").value,
+                        Email: document.getElementById("editEmail").value,
+                        ApiKey: document.getElementById("editApiKey").value,
+                        PromptIA: document.getElementById("editPromptIA").value,
+                        welcomeMsg: document.getElementById("editWelcomeMsg").value,
+                        reminderMsg: document.getElementById("editReminderMsg").value,
+                        confirmMsg: document.getElementById("editConfirmMsg").value,
+                        confirmedMsg: document.getElementById("editConfirmedMsg").value,
+                        is_active: activeSwitch.checked ? 1 : 0
+                    };
+
+                    try {
+                        const resp = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/update-company`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${localStorage.getItem("appToken")}`
+                            },
+                            body: JSON.stringify(updated)
+                        });
+                        const r = await resp.json();
+                        alert(r.success ? "Empresa atualizada!" : "Erro: " + r.message);
+                        renderPage("dashboard");
+                        setTimeout(loadCompanies, 50);
+                    } catch {
+                        alert("Falha ao atualizar empresa.");
+                    }
+                });
+            }
+
+            function addDevicesPage() {
+                return `<h2>Adicionar Dispositivos</h2>`;
+            }
+
+            document.addEventListener("submit", async e => {
+                if (e.target.id === "create-company-form") {
+                    e.preventDefault();
+                    const data = {
+                        name: document.getElementById("name").value,
+                        email: document.getElementById("email").value,
+                        apiKey: document.getElementById("apiKey").value,
+                        promptIA: document.getElementById("promptIA").value,
+                        welcomeMsg: document.getElementById("welcomeMsg").value,
+                        reminderMsg: document.getElementById("reminderMsg").value,
+                        confirmMsg: document.getElementById("confirmMsg").value,
+                        confirmedMsg: document.getElementById("confirmedMsg").value
+                    };
+                    const res = await fetch(`http://${SERVER_IP}:${SERVER_PORT}/create-company`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${localStorage.getItem("appToken")}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const r = await res.json();
+                    alert(r.success ? "Empresa criada!" : "Erro: " + r.message);
+                    renderPage("dashboard");
+                    setTimeout(loadCompanies, 50);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
