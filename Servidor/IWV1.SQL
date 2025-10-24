@@ -27,6 +27,15 @@ CREATE TABLE IF NOT EXISTS Dispositivos (
     FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );
 
+CREATE TABLE SuperAdmins (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_host VARCHAR(255),
+    mac_address VARCHAR(50),
+    ip_local VARCHAR(100),
+    ultimo_login DATETIME,
+    token_usado VARCHAR(50)
+);
+
 -- Tabela de Mensagens Placeholder (de exemplo: bem-vindo, lembrete, etc)
 CREATE TABLE IF NOT EXISTS Mensagens_Placeholder (
     MensagemId INT AUTO_INCREMENT PRIMARY KEY,
@@ -66,15 +75,6 @@ CREATE TABLE IF NOT EXISTS Consultas (
     Motivo TEXT,
     DataMarcado DATETIME,
     DataConsulta DATETIME,
-    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS SuperAdminDevices (
-    SuperId INT AUTO_INCREMENT PRIMARY KEY,
-    MacIp VARCHAR(100) DEFAULT NULL,
-    PairCode VARCHAR(10) NOT NULL,
-    Paired TINYINT(1) DEFAULT 0,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (EmpresaID) REFERENCES Empresas (ID) ON DELETE CASCADE
 );

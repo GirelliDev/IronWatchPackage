@@ -1,5 +1,6 @@
-package com.seuprojeto.ironwatchadmin
+package com.girellidev.ironwatchadmin
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -13,8 +14,8 @@ import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
 
-    private val SERVER_HOST = "localhost" // muda pro IP do servidor
-    private val SERVER_PORT = 9999
+    private val serverhost = "192.168.0.101"
+    private val serverport = 9999
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,11 +37,9 @@ class MainActivity : AppCompatActivity() {
     private fun enviarCodigo(codigo: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Socket(SERVER_HOST, SERVER_PORT).use { socket ->
+                Socket(serverhost, serverport).use { socket ->
                     val writer = OutputStreamWriter(socket.getOutputStream())
                     val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
-
-                    // envia código
                     writer.write("$codigo\n")
                     writer.flush()
 
@@ -48,13 +47,19 @@ class MainActivity : AppCompatActivity() {
                     val response = reader.readLine()
 
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Resposta do servidor: $response",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        if (response.contains("new-token")) {
+                            // abriu dashboard
+                            val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+                            startActivity(intent)
+                            finish() // fecha login
+                        } else {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Resposta do servidor: $response",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-
                     println("Enviado: $codigo | Recebido: $response")
                 }
             } catch (e: Exception) {
