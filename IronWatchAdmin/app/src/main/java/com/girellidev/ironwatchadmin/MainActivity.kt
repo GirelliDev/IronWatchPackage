@@ -14,7 +14,7 @@ import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
 
-    private val serverhost = "192.168.0.101"
+    private val serverhost = "181.215.45.46"
     private val serverport = 9999
 
     override fun onCreate(savedInstanceState: Bundle?) {

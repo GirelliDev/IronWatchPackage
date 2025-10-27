@@ -7,17 +7,52 @@ from typing import Optional, List
 import aiomysql
 from datetime import datetime
 
-# ---------- Variáveis globais ----------
+# ---------- VARIÁVEIS GLOBAIS ----------
 APP_TOKEN: Optional[str] = None
 EXPIRA_EM: float = 0.0
 TOKEN_TTL = 5 * 60  # 5 minutos
 REQUEST_LOG: List[str] = []
 db_pool: Optional[aiomysql.Pool] = None
+connected_clients: set = set()  # Clientes conectados para túnel de token
 
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 9999
 
-# ---------- DB ----------
+# ---------- FUNÇÕES AUXILIARES ----------
+def gen_pair_code() -> str:
+    """Gera código aleatório de 6 caracteres"""
+    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return ''.join(random.choice(chars) for _ in range(6))
+
+async def enviar_token_todos(token: str):
+    """Envia token novo para todos os clientes conectados"""
+    mensagem = f"TOKEN:{token}\n"
+    for client in list(connected_clients):
+        try:
+            client.write(mensagem.encode())
+            await client.drain()
+            print(f"[DEBUUUUUUG] Token enviado para cliente")
+        except Exception as e:
+            print(f"[DEBUUUUUUG] Falha ao enviar token: {e}")
+            connected_clients.discard(client)
+
+def gerar_token():
+    """Gera novo token e dispara envio para todos os clientes"""
+    global APP_TOKEN, EXPIRA_EM
+    APP_TOKEN = gen_pair_code()
+    EXPIRA_EM = time.time() + TOKEN_TTL
+    print(f"[DEBUUUUUUG] Novo token: {APP_TOKEN} (expira em {time.strftime('%H:%M:%S', time.localtime(EXPIRA_EM))})")
+    asyncio.create_task(enviar_token_todos(APP_TOKEN))
+
+# ---------- LOOP DE TOKEN ----------
+async def token_loop():
+    gerar_token()
+    while True:
+        await asyncio.sleep(1)
+        if time.time() >= EXPIRA_EM:
+            gerar_token()
+
+# ---------- BANCO DE DADOS ----------
 async def init_db():
     global db_pool
     db_pool = await aiomysql.create_pool(
@@ -28,32 +63,13 @@ async def init_db():
         minsize=1,
         maxsize=10
     )
-    print("[DB] Conectado ao MySQL")
+    print("[DEBUUUUUUG] Conectado ao MySQL")
 
-# ---------- Token rotativo ----------
-def gen_pair_code() -> str:
-    chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    return ''.join(random.choice(chars) for _ in range(6))
-
-def gerar_token():
-    global APP_TOKEN, EXPIRA_EM
-    APP_TOKEN = gen_pair_code()
-    EXPIRA_EM = time.time() + TOKEN_TTL
-    print(f"[TOKEN] Novo token: {APP_TOKEN} (expira em {time.strftime('%H:%M:%S', time.localtime(EXPIRA_EM))})")
-
-async def token_loop():
-    gerar_token()
-    while True:
-        await asyncio.sleep(1)
-        if time.time() >= EXPIRA_EM:
-            gerar_token()
-
-# ---------- Registro de dispositivo ----------
+# ---------- DISPOSITIVOS ----------
 async def registrar_dispositivo(data: dict, addr):
     ip = addr[0] if isinstance(addr, tuple) else str(addr)
     mac = data.get("mac_address")
     nome_host = data.get("hostname")
-
     async with db_pool.acquire() as conn:
         async with conn.cursor() as cur:
             await cur.execute("""
@@ -64,9 +80,9 @@ async def registrar_dispositivo(data: dict, addr):
                     token_usado = VALUES(token_usado)
             """, (nome_host, mac, ip, datetime.now(), APP_TOKEN))
             await conn.commit()
-            print(f"[AUTH] Dispositivo registrado: {nome_host} ({mac}) - {ip}")
+            print(f"[DEBUUUUUUG] Dispositivo registrado: {nome_host} ({mac}) - {ip}")
 
-# ---------- CRUD Empresa ----------
+# ---------- CRUD EMPRESA ----------
 async def add_company(data: dict) -> int:
     async with db_pool.acquire() as conn:
         async with conn.cursor() as cur:
@@ -78,7 +94,6 @@ async def add_company(data: dict) -> int:
                 data.get("apiKey")
             ))
             empresa_id = cur.lastrowid
-
             messages = [
                 ("bem_vindo", data.get("welcomeMsg", "")),
                 ("lembrete", data.get("reminderMsg", "")),
@@ -91,6 +106,7 @@ async def add_company(data: dict) -> int:
                     (empresa_id, texto, tipo)
                 )
             await conn.commit()
+            print(f"[DEBUUUUUUG] Empresa criada: {data.get('name')} (ID: {empresa_id})")
             return empresa_id
 
 async def list_companies():
@@ -109,14 +125,7 @@ async def get_company_full(id: int):
             await cur.execute("SELECT Tipo, Texto FROM Mensagens_Placeholder WHERE EmpresaID=%s", (id,))
             placeholders = await cur.fetchall()
             for ph in placeholders:
-                if ph["Tipo"] == "bem_vindo":
-                    empresa["welcomeMsg"] = ph["Texto"]
-                elif ph["Tipo"] == "lembrete":
-                    empresa["reminderMsg"] = ph["Texto"]
-                elif ph["Tipo"] == "confirmacao":
-                    empresa["confirmMsg"] = ph["Texto"]
-                elif ph["Tipo"] == "confirmado":
-                    empresa["confirmedMsg"] = ph["Texto"]
+                empresa[ph["Tipo"]] = ph["Texto"]
             return empresa
 
 async def update_company(data: dict) -> bool:
@@ -145,38 +154,60 @@ async def update_company(data: dict) -> bool:
                     (texto, data.get("id"), tipo)
                 )
             await conn.commit()
+            print(f"[DEBUUUUUUG] Empresa atualizada: {data.get('name')} (ID: {data.get('id')})")
             return True
 
-# ---------- Cliente ----------
+# ---------- CLIENTES ----------
 async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info("peername")
-    print(f"[CONEXÃO] {addr}")
+    connected_clients.add(writer)
+    print(f"[DEBUUUUUUG] Cliente conectado: {addr}")
 
     try:
         while not reader.at_eof():
             data = await reader.readline()
-            if not data: break
+            if not data:
+                break
             s = data.decode(errors="ignore").rstrip()
             REQUEST_LOG.append(f"{datetime.now()} - {addr} - {s}")
-            msg = json.loads(s)
 
-            # --- ação de token novo ---
+            # Tentar JSON
+            try:
+                msg = json.loads(s)
+                is_json = True
+            except json.JSONDecodeError:
+                is_json = False
+
+            if not is_json:
+                # apenas token cru
+                if s == APP_TOKEN:
+                    writer.write(f"TOKEN_OK\n".encode())
+                    await writer.drain()
+                    print(f"[DEBUUUUUUG] Token cru válido recebido de {addr}")
+                else:
+                    writer.write(f"ERRO: Token inválido\n".encode())
+                    await writer.drain()
+                    print(f"[DEBUUUUUUG] Token cru inválido de {addr}")
+                continue
+
+            # token via JSON
             if msg.get("action") == "new-token":
-                writer.write((json.dumps({"success": True, "token": APP_TOKEN}) + "\n").encode())
+                writer.write(f"TOKEN:{APP_TOKEN}\n".encode())
                 await writer.drain()
+                print(f"[DEBUUUUUUG] Token enviado manualmente para {addr}")
                 continue
 
-            # --- valida token ---
             if msg.get("token") != APP_TOKEN:
-                writer.write((json.dumps({"success": False, "message": "Token inválido"}) + "\n").encode())
+                writer.write("ERRO: Token inválido\n".encode())
                 await writer.drain()
+                print(f"[DEBUUUUUUG] Token inválido de {addr}")
                 continue
 
-            # --- registra dispositivo ---
+            # registrar dispositivo
             if "device" in msg:
                 await registrar_dispositivo(msg["device"], addr)
 
-            # --- ações CRUD ---
+            # ações
             action = msg.get("action")
             data_payload = msg.get("data", {})
             response = {"success": True}
@@ -195,20 +226,23 @@ async def handle_client(reader: asyncio.StreamReader, writer: asyncio.StreamWrit
 
                 writer.write((json.dumps(response) + "\n").encode())
                 await writer.drain()
+                print(f"[DEBUUUUUUG] Action processada: {action} para {addr}")
             except Exception as e:
                 writer.write((json.dumps({"success": False, "message": str(e)}) + "\n").encode())
                 await writer.drain()
+                print(f"[DEBUUUUUUG] Erro ao processar action {action}: {e}")
     finally:
+        connected_clients.discard(writer)
         writer.close()
         await writer.wait_closed()
-        print(f"[DESCONEXÃO] {addr}")
+        print(f"[DEBUUUUUUG] Cliente desconectado: {addr}")
 
-# ---------- Inicialização ----------
+# ---------- INICIALIZAÇÃO ----------
 async def start_server_async(host=DEFAULT_HOST, port=DEFAULT_PORT):
     await init_db()
     asyncio.create_task(token_loop())
     server = await asyncio.start_server(handle_client, host, port)
-    print(f"[SERVER] Servindo em {', '.join(str(s.getsockname()) for s in server.sockets or [])}")
+    print(f"[DEBUUUUUUG] Servidor rodando em {host}:{port}")
     async with server:
         await server.serve_forever()
 
@@ -216,5 +250,5 @@ def start_server(host=DEFAULT_HOST, port=DEFAULT_PORT):
     asyncio.run(start_server_async(host, port))
 
 if __name__ == "__main__":
-    print("[BOOT] Iniciando Servidor SuperAdmin IronWatch | GirelliDev")
+    print("[DEBUUUUUUG] Iniciando Servidor SuperAdmin IronWatch | GirelliDev")
     start_server()
