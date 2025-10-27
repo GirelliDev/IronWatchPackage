@@ -49,10 +49,11 @@ O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **vali
 cd server
 pip install -r requirements.txt
 python SuperAdmin.py
-
+```bash
 ⚙️ Servidor Normal (UserServer)
+```bash
 python UserServer.py
-
+```bash
 📱 Aplicativo Android (Admin e Usuário)
 
 Abra no Android Studio.
@@ -62,14 +63,15 @@ Configure o serverhost com o IP do servidor.
 Compile e instale no dispositivo (Run > Run 'app').
 
 💻 Aplicativo PC (Usuário)
+```bash
 pip install -r requirements.txt
 python IronWatchClient.py
-
+```bash
 
 Ou gere executável:
-
+```bash
 pyinstaller --onefile --icon=assets/logo.ico IronWatchClient.py
-
+```bash
 🔐 Autenticação e Segurança
 
 Tokens são gerados e renovados automaticamente pelo SuperAdmin.
@@ -83,15 +85,15 @@ Logs detalhados no console e arquivo ironwatch.log.
 🧾 Estrutura de Dados (JSON)
 
 Exemplo de requisição cliente → servidor:
-
+```bash
 {
   "token": "HudUvq",
   "action": "list-companies"
 }
-
+```bash
 
 Resposta:
-
+```bash
 {
   "success": true,
   "companies": [
@@ -99,11 +101,12 @@ Resposta:
     { "Nome": "MedPlus", "is_active": 0 }
   ]
 }
-
+```bash
 🛠️ Compilação
 Servidor → EXE (Windows)
+```bash
 pyinstaller --onefile --icon=logo.ico SuperAdmin.py
-
+```bash
 Aplicativo Android
 
 Build padrão via Gradle (Build > Build Bundle(s) / APK(s)).
@@ -137,3 +140,4 @@ GirelliDev
 📧 Email: suporte@girellidev.dev
 
 🇧🇷 Sistema desenvolvido no Brasil, com alma russa.
+
