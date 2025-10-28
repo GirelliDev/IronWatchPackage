@@ -432,7 +432,9 @@ async def main():
     task_admin = asyncio.create_task(start_admin_server_async(HOST, ADMIN_PORT))
     task_user = asyncio.create_task(start_user_server_async(HOST, USER_PORT))
     await asyncio.gather(task_admin, task_user)
-# ----------- Start do Server --------------
+#-----------------------------------------------------------------------------------------------------------------------------------------
+#------- Start
+#-----------------------------------------------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     print("[Creditos] Sistema feito com Suor e Sangue por GirelliDev")
     print("[IronWatch] Iniciando Servidores...")
