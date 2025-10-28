@@ -434,6 +434,7 @@ async def main():
     await asyncio.gather(task_admin, task_user)
 # ----------- Start do Server --------------
 if __name__ == "__main__":
+    print("[Creditos] Sistema feito com Suor e Sangue por GirelliDev")
     print("[IronWatch] Iniciando Servidores...")
     print("ok")
     asyncio.run (main())
