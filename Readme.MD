@@ -1,4 +1,5 @@
 # 🛡️ IronWatch Ecosystem
+
 > Plataforma de gerenciamento remoto e controle empresarial desenvolvida por **GirelliDev**.  
 > Um sistema modular, seguro e escalável que conecta administradores, clientes e servidores em uma única infraestrutura.
 
@@ -8,27 +9,26 @@
 
 O **IronWatch** é um ecossistema de monitoramento e administração composto por **cinco módulos principais**, todos interligados:
 
-1. 🧠 **Servidor SuperAdmin** — núcleo central que autentica e gerencia tokens de acesso.  
-2. ⚙️ **Servidor Principal (UserServer)** — responsável por lidar com comandos de clientes, status e dados.  
-3. 📱 **Aplicativo Android Admin** — interface de controle e gerenciamento móvel para administradores.  
-4. 👤 **Aplicativo Android Usuário** — app voltado ao cliente final, com notificações, calendário e agendamentos.  
+1. 🧠 **Servidor SuperAdmin** — núcleo central que autentica e gerencia tokens de acesso.
+2. ⚙️ **Servidor Principal (UserServer)** — responsável por lidar com comandos de clientes, status e dados - agora Juntei os dois servidores
+3. 📱 **Aplicativo Android Admin** — interface de controle e gerenciamento móvel para administradores.
+4. 👤 **Aplicativo Android Usuário** — app voltado ao cliente final, com notificações, calendário e agendamentos.
 5. 💻 **Aplicativo PC Usuário** — versão desktop simplificada para controle e comunicação direta com o servidor.
 
 O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **validação em tempo real** entre os módulos.
 
 ---
 
-
 ## ⚙️ Tecnologias Utilizadas
 
-| Componente | Tecnologia |
-|-------------|-------------|
-| Backend | Python 3.10+, AsyncIO, aiomysql, socket |
-| Mobile (Admin) | Android (Kotlin, Retrofit, RecyclerView) |
-| Mobile (Usuário) | Android (Kotlin, Jetpack) |
+| Componente        | Tecnologia                                               |
+| ----------------- | -------------------------------------------------------- |
+| Backend           | Python 3.10+, AsyncIO, aiomysql, socket                  |
+| Mobile (Admin)    | Android (Kotlin, Retrofit, RecyclerView)                 |
+| Mobile (Usuário)  | Android (Kotlin, Jetpack)                                |
 | Desktop (Usuário) | Python + CustomTkinter / Electron (dependendo da versão) |
-| Banco de Dados | MySQL |
-| Comunicação | TCP + JSON |
+| Banco de Dados    | MySQL                                                    |
+| Comunicação       | TCP + JSON                                               |
 
 ---
 
@@ -36,16 +36,19 @@ O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **vali
 
 [Admin App] ⇄ [handler] ⇄ [SuperAdmin Server] ⇄ [Main Server] ⇄ [handler] ⇄ [User App / PC App]
 
-- **SuperAdmin** gera e distribui tokens temporários para cada conexão.  
-- **UserServer** recebe comandos autenticados e envia atualizações em tempo real.  
-- **Aplicativos (Admin/Usuário)** se conectam via socket, trocando mensagens em formato JSON.  
+- **SuperAdmin** gera e distribui tokens temporários para cada conexão.
+- **UserServer** recebe comandos autenticados e envia atualizações em tempo real.
+- **Aplicativos (Admin/Usuário)** se conectam via socket, trocando mensagens em formato JSON.
 
 ---
 
 ## 🚀 Instalação e Execução
+
 ---
+
 ### 🧠 Servidor SuperAdmin
-```bash
+
+````bash
 cd server
 pip install -r requirements.txt
 python SuperAdmin.py
@@ -148,3 +151,4 @@ GirelliDev
 🇧🇷 Sistema desenvolvido no Brasil, com alma russa. 🇧🇷 🇷🇺
 
 
+````
