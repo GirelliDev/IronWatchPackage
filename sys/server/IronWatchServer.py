@@ -403,7 +403,10 @@ async def logar_dispositivo(data: dict, addr) -> bool:
         print(f"[LOGIN] Falha ao registrar dispositivo: {ip}")
     return success
 # aqui ainda não tem logica o suficiente pra rodar o usuario
-#Fazer após o mobile app do Admin ficar pronto, ETA:4000y
+#é muito bom quando tu faz um servidor funcionar mesmo faltando metade da logica de usuario :) happy days
+
+#Fazer após o mobile app do Admin ficar pronto, Tempo medio de conclusão :4000 anos, dependendo se conseguir fazer no senai
+
 #-----------------------------------------------------------------------------------------------------------------------------------------
 #------- INICIALIZAÇÃO DO SISTEMA 
 #-----------------------------------------------------------------------------------------------------------------------------------------
