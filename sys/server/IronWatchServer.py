@@ -9,6 +9,7 @@ import aiomysql
 from datetime import datetime
 ## Configs 
 APP_TOKEN: Optional[str] = None
+
 EXPIRA_EM: float = 0.0
 TOKEN_TTL = 5 * 60  # 5 minutos
 REQUEST_LOG: List[str] = []
@@ -340,7 +341,78 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
         print(f"[ADMIN LOG] Cliente desconectado: {addr}")
         if device_id:
             await log_admin_action(f"Cliente desconectado: {ip}", device_id)
+#---------- Login Superadmin ----------
 
+# ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
+
+# ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
+async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> bool:
+    """
+    Verifica o login do dispositivo admin pelo IP e senha enviada pelo app.
+    Retorna True se o acesso for autorizado, False caso contrário.
+    """
+    addr = writer.get_extra_info("peername")
+    ip = addr[0] if isinstance(addr, tuple) else str(addr)
+
+    # Busca ID do admin pelo IP
+    admin_id = await get_adminid_by_ip(ip)
+    if not admin_id:
+        response = {"success": False, "message": "Dispositivo não encontrado. Faça login com token."}
+        await enviar_resposta(writer, response)
+        print(f"[LOGIN FALHOU] Dispositivo {ip} não encontrado no banco.")
+        return False
+
+    # Verifica senha no banco
+    async with db_pool_admin.acquire() as conn:
+        async with conn.cursor() as cur:
+            await cur.execute("SELECT senha FROM dispositivosadmin WHERE id=%s", (admin_id,))
+            row = await cur.fetchone()
+
+            if not row:
+                response = {"success": False, "message": "Dispositivo não registrado."}
+                await enviar_resposta(writer, response)
+                print(f"[LOGIN FALHOU] Dispositivo {ip} sem registro.")
+                return False
+
+            senha_db = row[0]
+            senha_enviada = data_json.get("senha")
+
+            # Compara a senha enviada com a do banco
+            if senha_enviada != senha_db:
+                response = {"success": False, "message": "Senha incorreta. Acesso negado."}
+                await enviar_resposta(writer, response)
+                print(f"[LOGIN NEGADO] IP {ip} enviou senha incorreta.")
+                return False
+
+            # Se chegou até aqui, o login está certo
+            response = {"success": True, "message": "Acesso autorizado."}
+            await enviar_resposta(writer, response)
+            print(f"[LOGIN OK] Admin ID {admin_id} logado com sucesso ({ip})")
+            return True
+
+
+# ------------------ BUSCA ID PELO IP ------------------
+async def get_adminid_by_ip(ip: str) -> int | None:
+    """
+    Retorna o ID do admin baseado no IP, se existir.
+    """
+    async with db_pool_admin.acquire() as conn:
+        async with conn.cursor() as cur:
+            await cur.execute("SELECT id FROM dispositivosadmin WHERE ip=%s", (ip,))
+            row = await cur.fetchone()
+            if row:
+                return row[0]
+            return None
+
+
+# ------------------ FUNÇÃO AUXILIAR PRA ENVIAR JSON ------------------
+async def enviar_resposta(writer: asyncio.StreamWriter, data: dict):
+    """
+    Envia um dicionário JSON pro aplicativo via TCP.
+    """
+    msg = json.dumps(data, ensure_ascii=False) + "\n"
+    writer.write(msg.encode())
+    await writer.drain()
 #-----------------------------------------------------------------------------------------------------------------------------------------
 #------- LOGICA DO USER
 #-----------------------------------------------------------------------------------------------------------------------------------------
