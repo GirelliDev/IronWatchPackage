@@ -9,11 +9,10 @@
 
 O **IronWatch** é um ecossistema de monitoramento e administração composto por **cinco módulos principais**, todos interligados:
 
-1. 🧠 **Servidor SuperAdmin** — núcleo central que autentica e gerencia tokens de acesso.
-2. ⚙️ **Servidor Principal (UserServer)** — responsável por lidar com comandos de clientes, status e dados - agora Juntei os dois servidores
-3. 📱 **Aplicativo Android Admin** — interface de controle e gerenciamento móvel para administradores.
-4. 👤 **Aplicativo Android Usuário** — app voltado ao cliente final, com notificações, calendário e agendamentos.
-5. 💻 **Aplicativo PC Usuário** — versão desktop simplificada para controle e comunicação direta com o servidor.
+1. 🧠 **Servidor Unificado** — núcleo central que autentica e gerencia tokens de acesso - - responsável por lidar com comandos de clientes, status e dados
+2. 📱 **Aplicativo Android Admin** — interface de controle e gerenciamento móvel para administradores.
+3. 👤 **Aplicativo Android Usuário** — app voltado ao cliente final, com notificações, calendário e agendamentos.
+4. 💻 **Aplicativo PC Usuário** — versão desktop simplificada para controle e comunicação direta com o servidor.
 
 O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **validação em tempo real** entre os módulos.
 
@@ -34,7 +33,7 @@ O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **vali
 
 ## 🧠 Fluxo de Comunicação
 
-[Admin App] ⇄ [handler] ⇄ [SuperAdmin Server] ⇄ [Main Server] ⇄ [handler] ⇄ [User App / PC App]
+[Admin App] ⇄ [Server] ⇄ [User App / PC App]
 
 - **SuperAdmin** gera e distribui tokens temporários para cada conexão.
 - **UserServer** recebe comandos autenticados e envia atualizações em tempo real.
