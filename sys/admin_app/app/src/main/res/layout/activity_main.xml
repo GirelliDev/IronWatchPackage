@@ -25,10 +25,10 @@
 
         android:id="@+id/textView"
         android:layout_width="367dp"
-        android:layout_height="77dp"
-        android:layout_marginTop="155dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="190dp"
         android:fontFamily="@font/roboto_mono_bold"
-        android:text="Insira o Codigo Fornecido pelo Servidor"
+        android:text="Insira a Senha Cadastrada"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#ffffff"
@@ -50,7 +50,7 @@
             android:layout_height="68dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_edittext"
-            android:hint="Código"
+            android:hint="Senha"
             android:inputType="text"
             android:padding="12dp"
             android:textColor="#ffffff"
@@ -63,8 +63,8 @@
             android:layout_marginTop="20dp"
             android:backgroundTint="#D32F2F"
             android:fontFamily="@font/roboto_mono_bold"
-            android:text="Enviar"
-            android:textAllCaps="false"
+            android:text="Logar"
+            android:textAllCaps="true"
             android:textColor="#ffffff" />
     </LinearLayout>
 

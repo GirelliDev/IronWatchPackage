@@ -21,33 +21,33 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val codigoInput = findViewById<EditText>(R.id.codigoInput)
+        val senhaInput = findViewById<EditText>(R.id.codigoInput)
         val btnEnviar = findViewById<Button>(R.id.btnEnviar)
 
         btnEnviar.setOnClickListener {
-            val codigo = codigoInput.text.toString().trim()
-            if (codigo.isEmpty()) {
-                Toast.makeText(this, "Digite o código", Toast.LENGTH_SHORT).show()
+            val senha = senhaInput.text.toString().trim()
+            if (senha.isEmpty()) {
+                Toast.makeText(this, "Digite a Senha", Toast.LENGTH_SHORT).show()
             } else {
-                enviarCodigo(codigo)
+                enviarSenha(senha)
             }
         }
     }
 
-    private fun enviarCodigo(codigo: String) {
+    private fun enviarSenha(senha: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Socket(serverhost, serverport).use { socket ->
                     val writer = OutputStreamWriter(socket.getOutputStream())
                     val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
-                    writer.write("$codigo\n")
+                    writer.write("$senha\n")
                     writer.flush()
 
                     // lê resposta
                     val response = reader.readLine()
 
                     withContext(Dispatchers.Main) {
-                        if (response.contains("new-token")) {
+                        if (response.contains("senha")) {
                             // abriu dashboard
                             val intent = Intent(this@MainActivity, DashboardActivity::class.java)
                             startActivity(intent)
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                             ).show()
                         }
                     }
-                    println("Enviado: $codigo | Recebido: $response")
+                    println("Enviado: $senha | Recebido: $response")
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
