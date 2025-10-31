@@ -9,7 +9,7 @@ import aiomysql
 from datetime import datetime
 ## Configs 
 APP_TOKEN: Optional[str] = None
-
+APP_PASSWORD:"1r0nW4tch54"
 EXPIRA_EM: float = 0.0
 TOKEN_TTL = 5 * 60  # 5 minutos
 REQUEST_LOG: List[str] = []
@@ -20,7 +20,16 @@ db_pool_admin: Optional[aiomysql.Pool] = None
 db_pool_user: Optional[aiomysql.Pool] = None
 connected_admin = set()
 connected_user = set()
-
+#-----------------------------------------------------------------------------------------------------------------------------------------
+#------ Validação de identidade admin
+#-----------------------------------------------------------------------------------------------------------------------------------------
+async def validar_senha(password: str, ip: str) -> bool:
+    if password != APP_PASSWORD:
+        device_id = await get_device_id_by_ip(ip)
+        if device_id:
+            await log_admin_action("Senha Invalida", device_id)
+        return False
+    return True
 #-----------------------------------------------------------------------------------------------------------------------------------------
 #------ PAREAMENTO
 #-----------------------------------------------------------------------------------------------------------------------------------------
