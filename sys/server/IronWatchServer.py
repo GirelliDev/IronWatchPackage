@@ -23,8 +23,8 @@ connected_user = set()
 #-----------------------------------------------------------------------------------------------------------------------------------------
 #------ Validação de identidade admin
 #-----------------------------------------------------------------------------------------------------------------------------------------
-async def validar_senha(password: str, ip: str) -> bool:
-    if password != APP_PASSWORD:
+async def validar_senha(senha: str, ip: str) -> bool:
+    if senha != APP_PASSWORD:
         device_id = await get_device_id_by_ip(ip)
         if device_id:
             await log_admin_action("Senha Invalida", device_id)
