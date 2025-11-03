@@ -1,0 +1,1 @@
+#muito tempo, pouca vontade,não sei como trabalha só pensando nela
