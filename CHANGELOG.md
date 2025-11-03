@@ -11,6 +11,7 @@ Distribuição externa é proibida.
 - Documentação técnica interna (`docs/`)
 - Licença Proprietária Girelli Dev
 - Configuração inicial para uso privado e controle de acesso
+- muitos comentarios sobre ela
 
 ### Planejado
 
