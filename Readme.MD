@@ -45,15 +45,13 @@ O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **vali
 
 ---
 
-### 🧠 Servidor SuperAdmin
-
+### 🧠 Servidor 
+```bash
 cd server
 pip install -r requirements.txt
-python SuperAdmin.py
----
-⚙️ Servidor Normal (UserServer)
+python main.py
+```
 
-python UserServer.py
 
 ---
 📱 Aplicativo Android (Admin e Usuário)
@@ -65,15 +63,15 @@ Configure o serverhost com o IP do servidor.
 Compile e instale no dispositivo (Run > Run 'app').
 ---
 💻 Aplicativo PC (Usuário)
-
+```bash
 pip install -r requirements.txt
 python IronWatchClient.py
-
+```
 
 Ou gere executável:
-
+```bash
 pyinstaller --onefile --icon=assets/logo.ico IronWatchClient.py
-
+```
 ---
 🔐 Autenticação e Segurança
 
@@ -89,15 +87,15 @@ Logs detalhados no console e arquivo ironwatch.log.
 🧾 Estrutura de Dados (JSON)
 
 Exemplo de requisição cliente → servidor:
-
+```bash
 {
   "token": "HudUvq",
   "action": "list-companies"
 }
-
+```
 
 Resposta:
-
+```bash
 {
   "success": true,
   "companies": [
@@ -105,13 +103,14 @@ Resposta:
     { "Nome": "MedPlus", "is_active": 0 }
   ]
 }
+```
 ---
 
 🛠️ Compilação
 Servidor → EXE (Windows)
-
+```bash
 pyinstaller --onefile --icon=logo.ico SuperAdmin.py
-
+```
 ---
 Aplicativo Android
 
@@ -128,9 +127,9 @@ PC Client	Controle desktop do sistema
 
 Modo de debug ativado com:
 ---
-
+```bash
 python SuperAdmin.py --debug
-
+```
 Mostra tokens, conexões e falhas em tempo real.
 ---
 📜 Licença
@@ -146,4 +145,5 @@ GirelliDev
 📧 Email: suporte@girelli.dev.br
 
 🇧🇷 Sistema desenvolvido no Brasil, com alma russa. 🇧🇷 🇷🇺
-
+
+
