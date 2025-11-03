@@ -382,6 +382,7 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
         print(f"[ADMIN LOG] Cliente desconectado: {addr}")
         if device_id:
             await log_admin_action(f"Cliente desconectado: {ip}", device_id)
+            #faria qualquer coisa por ela
 # ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
 async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> bool:
     addr = writer.get_extra_info("peername")
@@ -395,7 +396,6 @@ async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asy
         print(f"[LOGIN FALHOU] Dispositivo {ip} não encontrado no banco.")
         return False
 
-    # Verifica senha no banco
     async with db_pool_admin.acquire() as conn:
         async with conn.cursor() as cur:
             await cur.execute("SELECT senha FROM dispositivosadmin WHERE id=%s", (admin_id,))
@@ -410,14 +410,13 @@ async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asy
             senha_db = row[0]
             senha_enviada = data_json.get("senha")
 
-            # Compara a senha enviada com a do banco
+           
             if senha_enviada != senha_db:
                 response = {"success": False, "message": "Senha incorreta. Acesso negado."}
                 await enviar_resposta(writer, response)
                 print(f"[LOGIN NEGADO] IP {ip} enviou senha incorreta.")
                 return False
 
-            # Se chegou até aqui, o login está certo
             response = {"success": True, "message": "Acesso autorizado."}
             await enviar_resposta(writer, response)
             print(f"[LOGIN OK] Admin ID {admin_id} logado com sucesso ({ip})")
@@ -437,7 +436,7 @@ async def get_adminid_by_ip(ip: str) -> int | None:
                 return row[0]
             return None
 
-
+# se tu chegou até aq. boa sorte entendendo o resto
 # ------------------ FUNÇÃO AUXILIAR PRA ENVIAR JSON ------------------
 async def enviar_resposta(writer: asyncio.StreamWriter, data: dict):
     """
@@ -521,7 +520,7 @@ async def start_admin_server_async(host=HOST, port=ADMIN_PORT):
     print(f"[ADMIN] Servidor rodando na porta {port}")
     async with server:
         await server.serve_forever()
-
+#só preciso de uma chance
 def start_server(host=HOST, port=ADMIN_PORT):
     asyncio.run(start_admin_server_async(host, port))
 # ---------- INICIALIZAÇÃO USUARIO ----------
