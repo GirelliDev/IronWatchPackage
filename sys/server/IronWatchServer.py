@@ -7,6 +7,10 @@ import json
 from typing import Optional, List
 import aiomysql
 from datetime import datetime
+#isso aqui é plenamente inutil, pode ser trocado pelo aiomysql, porem tá aq pra caso o corno do professor pedir
+#import mysql.Connector
+#from mysql.connector import Error
+#ignorar linha 10 a 12
 ## Configs 
 APP_TOKEN: Optional[str] = None
 APP_PASSWORD:"1r0nW4tch54"
