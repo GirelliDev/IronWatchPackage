@@ -391,14 +391,9 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
             await log_admin_action(f"Cliente desconectado: {ip}", device_id)
 #---------- Login Superadmin ----------
 
-# ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
 
 # ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
 async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> bool:
-    """
-    Verifica o login do dispositivo admin pelo IP e senha enviada pelo app.
-    Retorna True se o acesso for autorizado, False caso contrário.
-    """
     addr = writer.get_extra_info("peername")
     ip = addr[0] if isinstance(addr, tuple) else str(addr)
 
