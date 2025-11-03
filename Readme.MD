@@ -47,16 +47,14 @@ O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **vali
 
 ### 🧠 Servidor SuperAdmin
 
-````bash
 cd server
 pip install -r requirements.txt
-python SuperAdmin.py
-```bash
+python SuperAdmin.py
 ---
 ⚙️ Servidor Normal (UserServer)
-```bash
+
 python UserServer.py
-```bash
+
 ---
 📱 Aplicativo Android (Admin e Usuário)
 
@@ -67,15 +65,15 @@ Configure o serverhost com o IP do servidor.
 Compile e instale no dispositivo (Run > Run 'app').
 ---
 💻 Aplicativo PC (Usuário)
-```bash
+
 pip install -r requirements.txt
 python IronWatchClient.py
-```bash
+
 
 Ou gere executável:
-```bash
+
 pyinstaller --onefile --icon=assets/logo.ico IronWatchClient.py
-```bash
+
 ---
 🔐 Autenticação e Segurança
 
@@ -91,15 +89,15 @@ Logs detalhados no console e arquivo ironwatch.log.
 🧾 Estrutura de Dados (JSON)
 
 Exemplo de requisição cliente → servidor:
-```bash
+
 {
   "token": "HudUvq",
   "action": "list-companies"
 }
-```bash
+
 
 Resposta:
-```bash
+
 {
   "success": true,
   "companies": [
@@ -108,12 +106,12 @@ Resposta:
   ]
 }
 ---
-```bash
+
 🛠️ Compilação
 Servidor → EXE (Windows)
-```bash
+
 pyinstaller --onefile --icon=logo.ico SuperAdmin.py
-```bash
+
 ---
 Aplicativo Android
 
@@ -130,9 +128,9 @@ PC Client	Controle desktop do sistema
 
 Modo de debug ativado com:
 ---
-```bash
+
 python SuperAdmin.py --debug
-```bash
+
 Mostra tokens, conexões e falhas em tempo real.
 ---
 📜 Licença
