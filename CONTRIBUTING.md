@@ -14,6 +14,7 @@ válido e ativo com Girelli Dev, mediante autorização formal.
    - `main` → versão estável em produção.
    - `dev` → ambiente de desenvolvimento interno.
    - `feature/` → melhorias e novas funções sob autorização.
+   - `Vx.x`→ Versões antigas (Não Mexer Pelo Amor de Deus)
 4. Todos os commits devem ser auditáveis e assinados (`git commit -S`).
 5. Alterações críticas exigem aprovação direta de Girelli Dev.
 
