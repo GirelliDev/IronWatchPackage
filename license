@@ -1,0 +1,53 @@
+IRONWATCH PROPRIETARY LICENSE
+Copyright (c) 2025 Girelli Dev. All rights reserved.
+
+Este software, denominado "IronWatch", incluindo todos os seus componentes,
+módulos, documentação e materiais associados (coletivamente, “Software”),
+é propriedade exclusiva de Girelli Dev.
+
+1. DIREITOS DE USO
+O uso deste Software é estritamente limitado a indivíduos, empresas ou
+entidades que possuam CONTRATO válido e ativo com Girelli Dev.
+Nenhum direito de redistribuição, modificação, cópia, sublicenciamento
+ou engenharia reversa é concedido, exceto mediante autorização expressa
+por escrito.
+
+2. RESTRIÇÕES
+- É proibido copiar, compartilhar, vender ou disponibilizar publicamente
+  qualquer parte do Software.
+- É proibido descompilar, modificar, traduzir ou criar obras derivadas.
+- É proibido utilizar o Software em projetos concorrentes ou similares
+  sem permissão expressa de Girelli Dev.
+
+3. PROPRIEDADE INTELECTUAL
+O código-fonte, design, interface, documentação e identidade visual são
+propriedade exclusiva de Girelli Dev.
+O nome “IronWatch” e seus logotipos são marcas registradas ou de uso
+exclusivo, protegidos por leis de propriedade intelectual aplicáveis.
+
+4. CONFIDENCIALIDADE
+Clientes e parceiros autorizados concordam em manter confidencialidade
+sobre quaisquer detalhes técnicos, comerciais ou estratégicos relacionados
+ao Software, incluindo documentação, código-fonte e arquitetura.
+
+5. GARANTIA E RESPONSABILIDADE
+O Software é fornecido “como está” (“as is”), sem garantias explícitas
+ou implícitas, exceto conforme contrato de manutenção.
+
+6. ENCERRAMENTO DE LICENÇA
+O descumprimento de qualquer cláusula resultará na revogação imediata da
+licença de uso, sem necessidade de aviso prévio.
+
+7. GARANTIA LIMITADA E SUPORTE
+7.1 Garantia: correção de bugs identificados na entrega original durante vigência do contrato de manutenção.
+7.2 Suporte Mensal: atendimento prioritário para falhas críticas, correções de bugs e patches de segurança.
+7.3 SLA: Crítico (quebra de produção) — resposta ≤ 8h, correção ≤ 3 dias úteis.
+       Alto (degradação importante) — resposta ≤ 24h, correção ≤ 7 dias úteis.
+7.4 Exclusões: Modificações não autorizadas, ambientes mal configurados, integrações fora do escopo, novas funcionalidades.
+
+8. BLOQUEIO AUTOMÁTICO
+Caso o contrato ou pagamento mensal seja suspenso ou cancelado, o Software possui mecanismo de bloqueio automático,
+impedindo uso até regularização.
+
+---
+**IronWatch™** — Sistema proprietário. Distribuição ou cópia não autorizada é proibida por lei.
