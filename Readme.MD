@@ -145,9 +145,7 @@ Criado com ✊ disciplina soviética por GirelliDev.
 GirelliDev
 🌐 GitHub: https://github.com/GirelliDev
 
-📧 Email: suporte@girellidev.dev
+📧 Email: suporte@girelli.dev.br
 
 🇧🇷 Sistema desenvolvido no Brasil, com alma russa. 🇧🇷 🇷🇺
-
-
-````
+
