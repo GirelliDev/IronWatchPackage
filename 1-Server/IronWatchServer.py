@@ -307,7 +307,6 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
     is_superadmin = False
 
     try:
-        # --- AUTENTICAÇÃO INICIAL: senha TCP pura (linha única) ---
         data = await reader.readline()
         if not data:
             print(f"[ADMIN LOG] Nada recebido na autenticação de {addr}, fechando.")
@@ -324,14 +323,11 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
             await writer.drain()
             print(f"[ADMIN LOG] Superadmin autenticado: {addr}")
         else:
-            # se quiser aceitar JSON de autenticação no futuro, poderia tentar json.loads aqui
             resp = {"success": False, "msg": "senha incorreta"}
             writer.write((json.dumps(resp) + "\n").encode())
             await writer.drain()
             print(f"[ADMIN LOG] Tentativa de autenticação falhou de {addr}")
-            return  # fecha conexão para quem errou senha
-
-        # --- LOOP principal: agora espera mensagens JSON por linha ---
+            return
         while not reader.at_eof():
             data = await reader.readline()
             if not data:
@@ -339,7 +335,6 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
             mensagem = data.decode(errors="ignore").rstrip()
             REQUEST_LOG.append(f"{datetime.now()} - {addr} - {mensagem}")
 
-            # mensagem deve ser JSON; se não for, responde erro e continua
             try:
                 msg = json.loads(mensagem)
             except json.JSONDecodeError:
@@ -347,13 +342,11 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
                 await writer.drain()
                 continue
 
-            # Se for superadmin autenticado, pule a validação de token
             if not is_superadmin:
                 if not await validar_token(msg.get("token", ""), ip):
                     writer.write(("[ERROR] Token inválido\n").encode())
                     await writer.drain()
                     continue
-            # Se is_superadmin == True, passa direto
 
             action = msg.get("action")
             data_payload = msg.get("data", {})
@@ -389,9 +382,6 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
         print(f"[ADMIN LOG] Cliente desconectado: {addr}")
         if device_id:
             await log_admin_action(f"Cliente desconectado: {ip}", device_id)
-#---------- Login Superadmin ----------
-
-
 # ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
 async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> bool:
     addr = writer.get_extra_info("peername")
