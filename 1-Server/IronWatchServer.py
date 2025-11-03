@@ -20,6 +20,7 @@ REQUEST_LOG: List[str] = []
 HOST = "0.0.0.0"
 ADMIN_PORT = 9999
 USER_PORT = 5500
+#ELA = thainá
 db_pool_admin: Optional[aiomysql.Pool] = None
 db_pool_user: Optional[aiomysql.Pool] = None
 connected_admin = set()
@@ -290,7 +291,9 @@ async def get_company_full(id: int):
             placeholders = await cur.fetchall()
             empresa['placeholders'] = {ph['Tipo']: ph['Texto'] for ph in placeholders}
             return empresa
-
+#cerebro parou de cerebrar... [err] 404 love not found
+#faria tudo por ela. mas não to pronto ainda
+#se eu pudesse largar tudo por ela, eu largaria
 #--------------- HANDLER DE CLIENTE(DISPOSITIVO) --------------
 async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info("peername")
