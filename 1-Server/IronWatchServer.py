@@ -382,7 +382,6 @@ async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.Stre
         print(f"[ADMIN LOG] Cliente desconectado: {addr}")
         if device_id:
             await log_admin_action(f"Cliente desconectado: {ip}", device_id)
-            #faria qualquer coisa por ela
 # ------------------ VERIFICADOR DE LOGIN DO ADMIN ------------------
 async def verificador(data_json: dict, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> bool:
     addr = writer.get_extra_info("peername")
@@ -520,7 +519,7 @@ async def start_admin_server_async(host=HOST, port=ADMIN_PORT):
     print(f"[ADMIN] Servidor rodando na porta {port}")
     async with server:
         await server.serve_forever()
-#só preciso de uma chance
+
 def start_server(host=HOST, port=ADMIN_PORT):
     asyncio.run(start_admin_server_async(host, port))
 # ---------- INICIALIZAÇÃO USUARIO ----------
