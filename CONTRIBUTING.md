@@ -11,7 +11,7 @@ válido e ativo com Girelli Dev, mediante autorização formal.
 1. Todo acesso ao código deve ocorrer em ambiente autorizado (Git privado).
 2. Nenhum trecho de código, diagrama ou documentação pode ser compartilhado externamente.
 3. Alterações devem seguir o fluxo de branches interno:
-   - `main` → versão estável em produção.
+   - `main` → versão estável em produção(Ainda não em produção, Main é o codigo mais recente, quando esse parenteses for tirado, estará valendo essa regra).
    - `dev` → ambiente de desenvolvimento interno.
    - `feature/` → melhorias e novas funções sob autorização.
    - `Vx.x`→ Versões antigas (Não Mexer Pelo Amor de Deus)
