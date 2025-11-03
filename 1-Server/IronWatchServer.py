@@ -512,7 +512,6 @@ async def logar_dispositivo(data: dict, addr) -> bool:
 #------- INICIALIZAÇÃO DO SISTEMA 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-# ---------- INICIALIZAÇÃO ADMIN ----------
 async def start_admin_server_async(host=HOST, port=ADMIN_PORT):
     await init_dbadmin()
     server = await asyncio.start_server(handle_admin_client, host, port)
@@ -522,7 +521,7 @@ async def start_admin_server_async(host=HOST, port=ADMIN_PORT):
 
 def start_server(host=HOST, port=ADMIN_PORT):
     asyncio.run(start_admin_server_async(host, port))
-# ---------- INICIALIZAÇÃO USUARIO ----------
+
 async def start_user_server_async(host=HOST, port=USER_PORT):
     await init_dbuser()
     server = await asyncio.start_server(handle_user_client, host, port)
@@ -532,7 +531,7 @@ async def start_user_server_async(host=HOST, port=USER_PORT):
 
 def start_user_server(host=HOST, port=USER_PORT):
     asyncio.run(start_user_server_async(host, port))
-# -------------------- MAIN ----------------
+
 async def main():
     task_admin = asyncio.create_task(start_admin_server_async(HOST, ADMIN_PORT))
     task_user = asyncio.create_task(start_user_server_async(HOST, USER_PORT))
