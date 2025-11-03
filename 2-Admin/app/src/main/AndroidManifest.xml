@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+<!-- eu extremamente troiste porque professor non me deixa fazer aplicativos de pobre no meu tempo livre ...-->
         <!-- Tela do Dashboard -->
         <activity
             android:name=".DashboardActivity"
