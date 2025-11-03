@@ -294,6 +294,7 @@ async def get_company_full(id: int):
 #cerebro parou de cerebrar... [err] 404 love not found
 #faria tudo por ela. mas não to pronto ainda
 #se eu pudesse largar tudo por ela, eu largaria
+#agora já não dá pra fazer codigo, sono bateu, e não paro de pensar nela
 #--------------- HANDLER DE CLIENTE(DISPOSITIVO) --------------
 async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info("peername")
