@@ -299,10 +299,9 @@ async def get_company_full(id: int):
             placeholders = await cur.fetchall()
             empresa['placeholders'] = {ph['Tipo']: ph['Texto'] for ph in placeholders}
             return empresa
-#cerebro parou de cerebrar... [err] 404 love not found
-#faria tudo por ela. mas não to pronto ainda
-#se eu pudesse largar tudo por ela, eu largaria
-#agora já não dá pra fazer codigo, sono bateu, e não paro de pensar nela
+#tovarish, desistencia não é de nossa indole
+#continue fazendo tudo que fizestes antes. vai dar certo, ela precisa de nós
+
 #--------------- HANDLER DE CLIENTE(DISPOSITIVO) --------------
 async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
     addr = writer.get_extra_info("peername")
