@@ -7,20 +7,14 @@ import json
 from typing import Optional, List
 import aiomysql
 from datetime import datetime
-#isso aqui é plenamente inutil, pode ser trocado pelo aiomysql, porem tá aq pra caso o corno do professor pedir
-#import mysql.Connector
-#from mysql.connector import Error
-#ignorar linha 10 a 12
-## Configs 
 APP_TOKEN: Optional[str] = None
-APP_PASSWORD:"1r0nW4tch54"
+APP_PASSWORD = "1r0nW4tch54"
 EXPIRA_EM: float = 0.0
 TOKEN_TTL = 5 * 60  # 5 minutos
 REQUEST_LOG: List[str] = []
 HOST = "0.0.0.0"
 ADMIN_PORT = 9999
 USER_PORT = 5500
-#ELA, NELA = thainá
 db_pool_admin: Optional[aiomysql.Pool] = None
 db_pool_user: Optional[aiomysql.Pool] = None
 connected_admin = set()
@@ -299,8 +293,7 @@ async def get_company_full(id: int):
             placeholders = await cur.fetchall()
             empresa['placeholders'] = {ph['Tipo']: ph['Texto'] for ph in placeholders}
             return empresa
-#tovarish, desistencia não é de nossa indole
-#continue fazendo tudo que fizestes antes. vai dar certo, ela precisa de nós
+# Tovarish. pare de viadagem. tu é programador, ama de mais, assim como programa de mais. fois trocado? sim, mas não pelo codigo. bola pra frente
 
 #--------------- HANDLER DE CLIENTE(DISPOSITIVO) --------------
 async def handle_admin_client(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
@@ -446,7 +439,6 @@ async def get_adminid_by_ip(ip: str) -> int | None:
                 return row[0]
             return None
 
-# se tu chegou até aq. boa sorte entendendo o resto
 # ------------------ FUNÇÃO AUXILIAR PRA ENVIAR JSON ------------------
 async def enviar_resposta(writer: asyncio.StreamWriter, data: dict):
     """
