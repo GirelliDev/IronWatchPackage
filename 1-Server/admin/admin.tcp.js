@@ -1,25 +1,64 @@
 import net from 'net'
 
+const ADMIN_PASSWORD = 'Abaitolado ou não?' // Senha suprema ☭
+
 const adminSessions = new Map()
-// key: socket
-// value: { data }
+let lastAdminMessage = null
 
 export function startAdminTCP(port) {
   const server = net.createServer(socket => {
     console.log('[ADMIN] Conectado:', socket.remoteAddress)
 
     adminSessions.set(socket, {
-      data: null
+      buffer: '',
+      braceCount: 0,
+      authenticated: false,
+      lastSeen: Date.now()
     })
 
-    socket.on('data', raw => {
-      try {
-        const msg = JSON.parse(raw.toString())
+    socket.on('data', chunk => {
+      const session = adminSessions.get(socket)
+      if (!session) return
 
-        // só guarda
-        adminSessions.get(socket).data = msg
-      } catch {
-        socket.write(JSON.stringify({ error: 'JSON inválido' }))
+      const text = chunk.toString('utf8')
+
+      for (const char of text) {
+        if (char === '{') session.braceCount++
+        if (char === '}') session.braceCount--
+        session.buffer += char
+
+        if (session.braceCount === 0 && session.buffer.trim()) {
+          try {
+            const msg = JSON.parse(session.buffer)
+
+            if (msg.cmd === 'login') {
+              if (msg.payload?.senha !== ADMIN_PASSWORD) {
+                console.log('[ADMIN] NYET ❌ senha errada')
+                socket.write(JSON.stringify({ ok: false, error: 'nyet' }) + '\n')
+              } else {
+                session.authenticated = true
+                console.log('[ADMIN] AUTH OK ☭')
+                socket.write(JSON.stringify({ ok: true }) + '\n')
+              }
+            } else if (!session.authenticated) {
+              socket.write(JSON.stringify({ ok: false, error: 'not authenticated' }) + '\n')
+            } else {
+              lastAdminMessage = {
+                ip: socket.remoteAddress,
+                payload: msg,
+                at: new Date().toISOString()
+              }
+
+              console.log('[ADMIN] COMANDO:', msg)
+              socket.write(JSON.stringify({ ok: true }) + '\n')
+            }
+          } catch {
+            socket.write(JSON.stringify({ ok: false, error: 'json inválido' }) + '\n')
+          }
+
+          session.buffer = ''
+          session.braceCount = 0
+        }
       }
     })
 
@@ -34,7 +73,11 @@ export function startAdminTCP(port) {
   })
 }
 
-// 🔴 ponto crucial
+// 🔴 EXPORT QUE TU ESQUECEU, ANIMAL
 export function getAdminSessions() {
   return adminSessions
+}
+
+export function getLastAdminMessage() {
+  return lastAdminMessage
 }

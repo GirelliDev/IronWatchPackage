@@ -14,7 +14,7 @@ import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
 
-    private val serverhost = "181.215.45.46"
+    private val serverhost = "192.168.1.12"
     private val serverport = 9999
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,45 +33,59 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+private fun enviarSenha(senha: String) {
+    CoroutineScope(Dispatchers.IO).launch {
+        try {
+            Socket(serverhost, serverport).use { socket ->
+                val writer = OutputStreamWriter(socket.getOutputStream(), Charsets.UTF_8)
+                val reader = BufferedReader(InputStreamReader(socket.getInputStream(), Charsets.UTF_8))
 
-    private fun enviarSenha(senha: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Socket(serverhost, serverport).use { socket ->
-                    val writer = OutputStreamWriter(socket.getOutputStream())
-                    val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
-                    writer.write("$senha\n")
-                    writer.flush()
-
-                    // lê resposta
-                    val response = reader.readLine()
-
-                    withContext(Dispatchers.Main) {
-                        if (response.contains("senha")) {
-                            // abriu dashboard
-                            val intent = Intent(this@MainActivity, DashboardActivity::class.java)
-                            startActivity(intent)
-                            finish() // fecha login
-                        } else {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Resposta do servidor: $response",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                    println("Enviado: $senha | Recebido: $response")
+                val json = """
+                {
+                  "cmd": "login",
+                  "payload": {
+                    "senha": "$senha"
+                  }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                """.trimIndent()
+
+                // ENVIA JSON + delimitador
+                writer.write(json + "\n")
+                writer.flush()
+
+                // LÊ resposta do servidor
+                val response = reader.readLine() ?: ""
+
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Erro ao conectar: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (response.contains("\"ok\":true")) {
+                        val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Resposta do servidor: $response",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
+
+                println("JSON enviado:")
+                println(json)
+                println("Resposta recebida:")
+                println(response)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "Erro ao conectar: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
+}
+
 }
