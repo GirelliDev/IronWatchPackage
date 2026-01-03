@@ -144,6 +144,6 @@ GirelliDev
 
 📧 Email: suporte@girelli.dev.br
 
-🇧🇷 Sistema desenvolvido no Brasil, com alma russa, por um dev apaixonado. 🇧🇷 🇷🇺
+🇧🇷 Sistema desenvolvido no Brasil, com alma russa, por um dev desalmado 🇧🇷 🇷🇺
 
 

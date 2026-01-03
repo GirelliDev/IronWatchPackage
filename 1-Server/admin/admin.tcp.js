@@ -1,19 +1,24 @@
 import net from 'net'
-
-const ADMIN_PASSWORD = 'Abaitolado ou não?' // Senha suprema ☭
+import {
+  generateRotatingCode,
+  consumeCode,
+  validateToken
+} from './admin.auth.js'
 
 const adminSessions = new Map()
 let lastAdminMessage = null
 
 export function startAdminTCP(port) {
+  generateRotatingCode()
+
   const server = net.createServer(socket => {
-    console.log('[ADMIN] Conectado:', socket.remoteAddress)
+    const ip = socket.remoteAddress
+    console.log('[ADMIN] Conectado:', ip)
 
     adminSessions.set(socket, {
       buffer: '',
       braceCount: 0,
-      authenticated: false,
-      lastSeen: Date.now()
+      authenticated: false
     })
 
     socket.on('data', chunk => {
@@ -31,29 +36,39 @@ export function startAdminTCP(port) {
           try {
             const msg = JSON.parse(session.buffer)
 
+            // LOGIN COM CÓDIGO
             if (msg.cmd === 'login') {
-              if (msg.payload?.senha !== ADMIN_PASSWORD) {
-                console.log('[ADMIN] NYET ❌ senha errada')
-                socket.write(JSON.stringify({ ok: false, error: 'nyet' }) + '\n')
+              const token = consumeCode(msg.payload?.code, ip)
+
+              if (!token) {
+                console.log('[AUTH] Tentativa inválida de', ip)
+                socket.write(JSON.stringify({ ok: false }) + '\n')
               } else {
                 session.authenticated = true
-                console.log('[ADMIN] AUTH OK ☭')
-                socket.write(JSON.stringify({ ok: true }) + '\n')
+                session.token = token
+
+                console.log('[AUTH] Sessão criada', ip)
+                socket.write(JSON.stringify({ ok: true, token }) + '\n')
               }
-            } else if (!session.authenticated) {
-              socket.write(JSON.stringify({ ok: false, error: 'not authenticated' }) + '\n')
-            } else {
+            }
+
+            // COMANDO NORMAL
+            else {
+              if (!validateToken(msg.token, ip)) {
+                socket.write(JSON.stringify({ ok: false }) + '\n')
+                return
+              }
+
               lastAdminMessage = {
-                ip: socket.remoteAddress,
+                ip,
                 payload: msg,
                 at: new Date().toISOString()
               }
 
-              console.log('[ADMIN] COMANDO:', msg)
               socket.write(JSON.stringify({ ok: true }) + '\n')
             }
           } catch {
-            socket.write(JSON.stringify({ ok: false, error: 'json inválido' }) + '\n')
+            socket.write(JSON.stringify({ ok: false }) + '\n')
           }
 
           session.buffer = ''
@@ -64,7 +79,7 @@ export function startAdminTCP(port) {
 
     socket.on('close', () => {
       adminSessions.delete(socket)
-      console.log('[ADMIN] Desconectado')
+      console.log('[ADMIN] Desconectado:', ip)
     })
   })
 
@@ -73,7 +88,6 @@ export function startAdminTCP(port) {
   })
 }
 
-// 🔴 EXPORT QUE TU ESQUECEU, ANIMAL
 export function getAdminSessions() {
   return adminSessions
 }

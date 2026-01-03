@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5B5B5B"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:background="@drawable/bg2"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/titulo"
         android:layout_width="match_parent"
         android:layout_height="78dp"
-        android:background="#383838"
+        android:background="#ED2E2E2E"
         android:fontFamily="@font/roboto_mono_bold"
         android:gravity="center"
         android:text="IronWatch Admin"
@@ -23,14 +23,28 @@
 
     <TextView
 
-        android:id="@+id/textView"
+        android:id="@+id/acessorestrito"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="190dp"
+        android:layout_marginTop="130dp"
         android:fontFamily="@font/roboto_mono_bold"
-        android:text="Insira a Senha Cadastrada"
+        android:text="Acesso Restrito"
         android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="#ffffff"
+        android:textSize="34sp"
+        android:textStyle="bold" />
+
+    <TextView
+
+        android:id="@+id/acessorestrito2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:text="Insira o Codigo rotativo fornecido pelo servidor"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="#ffffff"
         android:textStyle="bold" />
 
@@ -38,8 +52,8 @@
         android:id="@+id/loginbox"
         android:layout_width="354dp"
         android:layout_height="242dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_loginbox"
+        android:layout_marginTop="40dp"
+        android:background="#C42F2F2F"
         android:elevation="4dp"
         android:orientation="vertical"
         android:padding="24dp">
@@ -50,7 +64,7 @@
             android:layout_height="68dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_edittext"
-            android:hint="Senha"
+            android:hint="Codigo"
             android:inputType="text"
             android:padding="12dp"
             android:textColor="#ffffff"
@@ -61,25 +75,12 @@
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:layout_marginTop="20dp"
-            android:backgroundTint="#D32F2F"
+            android:backgroundTint="#FF0000"
             android:fontFamily="@font/roboto_mono_bold"
-            android:text="Logar"
+            android:text="Entrar"
             android:textAllCaps="true"
             android:textColor="#ffffff" />
     </LinearLayout>
-
-<TextView
-    android:id="@+id/Creditos"
-    android:layout_width="match_parent"
-    android:layout_height="36dp"
-    android:layout_gravity="bottom"
-    android:gravity="center"
-    android:layout_marginTop="250dp"
-    android:text="Produzido por GirelliDev"
-    android:textAlignment="center"
-    android:textColor="#ffffff"
-    android:textStyle="bold" />
-
 
 
 </LinearLayout>
