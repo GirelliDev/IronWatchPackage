@@ -1,5 +1,0 @@
-<!-- res/drawable/bg_loginbox.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#762A2A2A"/>
-    <corners android:radius="16dp"/>
-</shape>
