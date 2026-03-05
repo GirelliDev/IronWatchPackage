@@ -1,6 +1,9 @@
 package com.girellidev.ironwatchserver.security;
 
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class SecurityManager {
 
@@ -34,17 +37,24 @@ public class SecurityManager {
     }
 
     // Gerar token de sessão e salvar no banco
-    public String createSession(String login) {
-        String token = TokenGenerator.generateSessionToken();
-        try {
-            int userId = userDAO.getUserId(login);
-            if (userId == -1) return null;
-            userDAO.insertSession(userId, token, SessionManager.expirationMinutes(30));
-            return token;
-        } catch (SQLException e) {
-            return null;
-        }
+  public String createSession(String login) {
+    String token = TokenGenerator.generateSessionToken();
+    try {
+        int userId = userDAO.getUserId(login);
+        if (userId == -1) return null;
+
+        LocalDateTime expiration =
+                Instant.ofEpochMilli(SessionManager.calculateExpiration(30))
+                       .atZone(ZoneId.systemDefault())
+                       .toLocalDateTime();
+
+        userDAO.insertSession(userId, token, expiration);
+
+        return token;
+    } catch (SQLException e) {
+        return null;
     }
+}
 
     // Validar token de sessão
     public boolean validateSession(String token) {

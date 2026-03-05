@@ -1,30 +1,41 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
-
 package com.girellidev.ironwatchserver;
 
-import com.girellidev.ironwatchserver.security.PasswordHasher;
-import com.girellidev.ironwatchserver.security.SessionManager;
-import com.girellidev.ironwatchserver.security.TokenGenerator;
+import com.girellidev.ironwatchserver.network.TcpServer;
+import com.girellidev.ironwatchserver.security.CodeManager;
+import com.girellidev.ironwatchserver.security.CodeType;
 
 public class IronWatchServer {
 
     public static void main(String[] args) {
 
-        System.out.println("Gerando hash...");
-        String hash = PasswordHasher.hash("123456");
-        System.out.println("Hash: " + hash);
+        System.out.println("=================================");
+        System.out.println("CORELABS - IRONWATCH V3");
+        System.out.println("=================================");
+        System.out.println("[BOOT] Tentando iniciar...");
+        System.out.println("[BOOT] INICIADO");
+        System.out.println("[BOOT] Gerando Codigo Master Admin....");
+        try {
 
-        System.out.println("Validando senha...");
-        System.out.println("Senha correta? " + PasswordHasher.verify("123456", hash));
+            // gera código MASTER para login inicial
+            var masterCode = CodeManager.generate(CodeType.MASTER_ADMIN);
 
-        System.out.println("Código admin: " + TokenGenerator.generateAlphaNumericCode(8));
-        System.out.println("Código cliente: " + TokenGenerator.generateNumericCode(6));
+            System.out.println("[BOOT] CODIGO MASTER ADMIN: " + masterCode.getCode());
 
-        System.out.println("Session: " + TokenGenerator.generateSessionToken());
+            // porta do servidor
+            int port = 5555;
 
-        System.out.println("Expira em: " + SessionManager.expirationMinutes(10));
+            TcpServer server = new TcpServer(port);
+
+            System.out.println("[BOOT] Tentando Iniciar Protocolo TCP....");
+
+            server.start();
+
+        } catch (Exception e) {
+
+            System.out.println("Servidor não conseguiu iniciar, Verifique erros abaixo, mocorongo");
+            e.printStackTrace();
+
+        }
+
     }
 }
