@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5B5B5B"
-    android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:background="@drawable/bege"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/titulo"
@@ -26,12 +26,17 @@
         android:id="@+id/textView"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
+<<<<<<< Updated upstream
         android:layout_marginTop="155dp"
+=======
+        android:layout_marginTop="200dp"
+>>>>>>> Stashed changes
         android:fontFamily="@font/roboto_mono_bold"
         android:text="ACESSO RESTRITO"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Material.Large"
         android:textColor="#ffffff"
+<<<<<<< Updated upstream
         android:textSize="25sp"
         android:textStyle="bold" />
 
@@ -41,6 +46,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
+=======
+        android:textStyle="bold" />
+    <TextView
+
+        android:id="@+id/textView"
+        android:layout_width="367dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+>>>>>>> Stashed changes
         android:fontFamily="@font/roboto_mono_bold"
         android:text="Insira o Código rotativo fornecido pelo Servidor"
         android:textAlignment="center"
@@ -64,7 +78,7 @@
             android:layout_height="68dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_edittext"
-            android:hint="Senha"
+            android:hint="Código"
             android:inputType="text"
             android:padding="20dp"
             android:textColor="#ffffff"
@@ -81,19 +95,6 @@
             android:textAllCaps="true"
             android:textColor="#ffffff" />
     </LinearLayout>
-
-<TextView
-    android:id="@+id/Creditos"
-    android:layout_width="match_parent"
-    android:layout_height="36dp"
-    android:layout_gravity="bottom"
-    android:gravity="center"
-    android:layout_marginTop="250dp"
-    android:text="Produzido por GirelliDev"
-    android:textAlignment="center"
-    android:textColor="#ffffff"
-    android:textStyle="bold" />
-
 
 
 </LinearLayout>
