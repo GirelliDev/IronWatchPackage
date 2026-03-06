@@ -1,0 +1,87 @@
+RELATÓRIO SEMANAL DE PROJETO – DESENVOLVIMENTO DE SISTEMAS
+
+Curso: Técnico em Desenvolvimento de Sistemas
+Disciplina: Desenvolvimento de Sistemas
+Professor: Marcelo Dalsochio Dipp
+Equipe: Projeto IronWatch
+Semana: 02/03/2026 a 06/03/2026
+
+Integrante:
+• Girelli Dev
+
+1. STATUS GERAL DO PROJETO
+Resumo da semana
+
+Desenvolvimento da base do sistema IronWatchServer em Java, incluindo a estrutura inicial do servidor, sistema de autenticação de usuários e organização do módulo de segurança.
+
+Também foi implementada a estrutura de tipos de código de acesso (MASTER_ADMIN, ADMIN_INVITE e EMPRESA_CLIENT) e iniciados testes para comunicação segura entre cliente e servidor.
+
+Situação atual
+
+☑ Planejamento
+☑ Desenvolvimento inicial do Servidor
+☐ Desenvolvimento avançado do Servidor
+☐ Desenvolvimento inicial do App Admin
+☐ Desenvolvimento inicial do App Cliente
+☐ Desenvolvimento avançado do App Admin
+☐ Desenvolvimento avançado do App Cliente
+☐ Testes
+☐ Finalização
+
+2. RESPONSABILIDADES E ENTREGAS
+Integrante	Função no projeto	Tarefas desta semana	% Concluído	Evidência
+Girelli Dev	Backend / Frontend / Banco de Dados	Criação do servidor Java, sistema de autenticação, estrutura de segurança e organização do projeto	85%	https://github.com/GirelliDev/IronWatchPackage
+3. QUADRO DE DISTRIBUIÇÃO DE TAREFAS
+Tarefa	Situação	Observações
+Criar estrutura do servidor Java	✅ Concluído	Base do projeto criada
+Implementar autenticação de usuário	🕓 Em andamento	Estrutura pronta, integração em progresso
+Criar sistema de códigos de acesso	✅ Concluído	Enum com tipos de código
+Estruturar banco de dados	🕓 Em andamento	Modelagem inicial
+Testar comunicação cliente-servidor	⚠️ Pendente	Será implementado com TLS
+4. PROGRESSO GERAL
+
+Percentual estimado de conclusão do projeto: 35%
+
+Tarefas concluídas nesta semana
+
+• Criação da estrutura inicial do servidor
+• Implementação da base do sistema de autenticação
+• Definição dos tipos de código de acesso
+
+Próximas metas
+
+• Implementar comunicação TCP criptografada (TLS)
+• Integrar backend ao banco de dados
+• Criar interface administrativa do sistema
+
+5. DIFICULDADES / DESAFIOS
+
+Configuração do ambiente Java e organização da arquitetura de segurança do sistema para suportar autenticação e comunicação segura entre cliente e servidor.
+
+6. PRÓXIMOS PASSOS
+
+Finalizar a integração com o banco de dados, implementar comunicação segura entre cliente e servidor e avançar no desenvolvimento da interface administrativa.
+
+7. AVALIAÇÃO
+Membro	Participação	Comunicação	Entrega no prazo	Colaboração
+Girelli Dev	⭐⭐⭐⭐⭐	⭐⭐⭐⭐	⭐⭐⭐⭐	⭐⭐⭐⭐
+
+Legenda: ⭐ = Ruim ⭐⭐⭐⭐⭐ = Excelente
+
+8. ANEXOS E EVIDÊNCIAS
+
+Repositório do projeto:
+
+https://github.com/GirelliDev/IronWatchPackage
+
+Commits realizados:
+
+https://github.com/GirelliDev/IronWatchPackage/commit/2b47c817a4f9bd36ed42dd0efc26d503fd59f999
+https://github.com/GirelliDev/IronWatchPackage/commit/34819b0293a8ca863c89baa0514042a87310f3e7
+https://github.com/GirelliDev/IronWatchPackage/commit/e52884726d04e120c6f248e84a2b61823328d069
+
+Capturas de tela do código e commits podem ser anexadas conforme necessário.
+
+Assinatura:
+
+Data de entrega: 06/03/2026

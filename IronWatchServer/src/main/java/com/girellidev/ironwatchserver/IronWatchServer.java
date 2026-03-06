@@ -12,7 +12,7 @@ public class IronWatchServer {
         System.out.println("CORELABS - IRONWATCH V3");
         System.out.println("=================================");
         System.out.println("[BOOT] Tentando iniciar...");
-        System.out.println("[BOOT] INICIADO");
+        System.out.println("[BOOT] Iniciado com Sucesso!");
         System.out.println("[BOOT] Gerando Codigo Master Admin....");
         try {
 
