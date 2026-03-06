@@ -1,149 +1,234 @@
 # 🛡️ IronWatch Ecosystem
 
-> Plataforma de gerenciamento remoto e controle empresarial desenvolvida por **GirelliDev**.  
-> Um sistema modular, seguro e escalável que conecta administradores, clientes e servidores em uma única infraestrutura.
+Plataforma de gerenciamento remoto e controle empresarial desenvolvida por **GirelliDev**.
+
+O **IronWatch** é um ecossistema modular que conecta administradores, clientes e servidores através de uma infraestrutura centralizada e segura.
+
+O sistema foi projetado para ser **simples, rápido e robusto**, utilizando comunicação direta via **TCP Socket** e autenticação baseada em **tokens temporários**.
 
 ---
 
-## 🌍 Visão Geral
+# 🌍 Arquitetura do Sistema
 
-O **IronWatch** é um ecossistema de monitoramento e administração composto por **cinco módulos principais**, todos interligados:
+O ecossistema é composto por quatro módulos principais.
 
-1. 🧠 **Servidor Unificado** — núcleo central que autentica e gerencia tokens de acesso - - responsável por lidar com comandos de clientes, status e dados
-2. 📱 **Aplicativo Android Admin** — interface de controle e gerenciamento móvel para administradores.
-3. 👤 **Aplicativo Android Usuário** — app voltado ao cliente final, com notificações, calendário e agendamentos.
-4. 💻 **Aplicativo PC Usuário** — versão desktop simplificada para controle e comunicação direta com o servidor.
+### 🧠 IronWatch Server
 
-O sistema utiliza **comunicação socket TCP**, **tokens temporários** e **validação em tempo real** entre os módulos.
+Servidor central responsável por:
 
----
-
-## ⚙️ Tecnologias Utilizadas
-
-| Componente        | Tecnologia                                               |
-| ----------------- | -------------------------------------------------------- |
-| Backend           | Python 3.10+, AsyncIO, aiomysql, socket                  |
-| Mobile (Admin)    | Android (Kotlin, Retrofit, RecyclerView)                 |
-| Mobile (Usuário)  | Android (Kotlin, Jetpack)                                |
-| Desktop (Usuário) | Python + CustomTkinter / Electron (dependendo da versão) |
-| Banco de Dados    | MySQL                                                    |
-| Comunicação       | TCP + JSON                                               |
+* autenticação de usuários
+* geração e validação de tokens
+* gerenciamento de sessões
+* comunicação entre clientes e administradores
+* acesso ao banco de dados
 
 ---
 
-## 🧠 Fluxo de Comunicação
+### 📱 IronWatch Admin (Android)
 
-[Admin App] ⇄ [Server] ⇄ [User App / PC App]
+Aplicativo utilizado por administradores para:
 
-- **SuperAdmin** gera e distribui tokens temporários para cada conexão.
-- **UserServer** recebe comandos autenticados e envia atualizações em tempo real.
-- **Aplicativos (Admin/Usuário)** se conectam via socket, trocando mensagens em formato JSON.
-
----
-
-## 🚀 Instalação e Execução
+* gerenciamento de empresas
+* controle de usuários
+* envio de comandos
+* monitoramento em tempo real
 
 ---
 
-### 🧠 Servidor 
-```bash
-cd server
-pip install -r requirements.txt
-python main.py
+### 👤 IronWatch User (Android)
+
+Aplicativo utilizado pelo cliente final.
+
+Funcionalidades previstas:
+
+* notificações
+* calendário
+* agendamentos
+* comunicação com a empresa
+
+---
+
+### 💻 IronWatch Desktop Client
+
+Cliente desktop simplificado que permite:
+
+* comunicação direta com o servidor
+* execução de comandos remotos
+* visualização de informações básicas
+
+---
+
+# ⚙️ Tecnologias Utilizadas
+
+| Camada         | Tecnologia         |
+| -------------- | ------------------ |
+| Backend        | Java / TCP Socket  |
+| Mobile         | Android (Kotlin)   |
+| Desktop        | Python             |
+| Banco de dados | MySQL              |
+| Comunicação    | TCP + JSON         |
+| Segurança      | Tokens temporários |
+
+---
+
+# 🧠 Fluxo de Comunicação
+
+```
+Admin App
+     │
+     │ TCP
+     ▼
+IronWatch Server
+     │
+     │ TCP
+     ▼
+User App / Desktop Client
 ```
 
+Todos os clientes se conectam diretamente ao **IronWatch Server**, que atua como ponto central de autenticação e controle.
 
 ---
-📱 Aplicativo Android (Admin e Usuário)
 
-Abra no Android Studio.
+# 🔐 Autenticação
 
-Configure o serverhost com o IP do servidor.
+O sistema utiliza **tokens temporários de sessão**.
 
-Compile e instale no dispositivo (Run > Run 'app').
----
-💻 Aplicativo PC (Usuário)
-```bash
-pip install -r requirements.txt
-python IronWatchClient.py
-```
+Fluxo básico:
 
-Ou gere executável:
-```bash
-pyinstaller --onefile --icon=assets/logo.ico IronWatchClient.py
-```
----
-🔐 Autenticação e Segurança
+1. Usuário envia login
+2. Servidor valida credenciais
+3. Servidor gera token de sessão
+4. Cliente utiliza token nas requisições seguintes
 
-Tokens são gerados e renovados automaticamente pelo SuperAdmin.
+Cada token possui:
 
-Cada token tem tempo de vida (TTL) configurável.
+* tempo de vida configurável (TTL)
+* associação com usuário
+* validação no servidor
 
-Comunicação via JSON criptografado (AES opcional).
-
-Logs detalhados no console e arquivo ironwatch.log.
 ---
 
-🧾 Estrutura de Dados (JSON)
+# 📦 Estrutura de Comunicação (JSON)
 
-Exemplo de requisição cliente → servidor:
-```bash
+Exemplo de requisição enviada ao servidor:
+
+```json
 {
   "token": "HudUvq",
   "action": "list-companies"
 }
 ```
 
-Resposta:
-```bash
+Resposta do servidor:
+
+```json
 {
   "success": true,
   "companies": [
-    { "Nome": "TechCorp", "is_active": 1 },
-    { "Nome": "MedPlus", "is_active": 0 }
+    { "name": "TechCorp", "is_active": 1 },
+    { "name": "MedPlus", "is_active": 0 }
   ]
 }
 ```
+
 ---
 
-🛠️ Compilação
-Servidor → EXE (Windows)
+# 🚀 Executando o Servidor
+
+### Compilar
+
 ```bash
-pyinstaller --onefile --icon=logo.ico SuperAdmin.py
+mvn clean package
 ```
----
-Aplicativo Android
 
-Build padrão via Gradle (Build > Build Bundle(s) / APK(s)).
----
-🧩 Estrutura Modular
-Módulo	Função
-SuperAdmin	Gerencia tokens e autenticações
-UserServer	Lida com comandos de clientes e dados
-Admin App	Interface de gerenciamento
-User App	Interface do cliente final
-PC Client	Controle desktop do sistema
-🧰 Logs e Debug
+### Executar
 
-Modo de debug ativado com:
----
 ```bash
-python SuperAdmin.py --debug
+java -jar IronWatchServer.jar
 ```
-Mostra tokens, conexões e falhas em tempo real.
+
 ---
-📜 Licença
 
-Distribuído sob a licença MIT.
-Criado com ✊ disciplina soviética por GirelliDev.
+# 📱 Executando o App Android
+
+1. Abra o projeto no **Android Studio**
+2. Configure o endereço do servidor
+
+```kotlin
+private val serverhost = "SEU_IP_DO_SERVIDOR"
+```
+
+3. Execute o projeto
+
+```
+Run → Run 'app'
+```
+
 ---
-📞 Contato
 
-GirelliDev
-🌐 GitHub: https://github.com/GirelliDev
+# 💻 Executando o Cliente Desktop
 
-📧 Email: suporte@girelli.dev.br
+Instalar dependências:
 
-🇧🇷 Sistema desenvolvido no Brasil, com alma russa, por um dev desalmado 🇧🇷 🇷🇺
+```bash
+pip install -r requirements.txt
+```
 
+Executar:
 
+```bash
+python IronWatchClient.py
+```
+
+Gerar executável:
+
+```bash
+pyinstaller --onefile IronWatchClient.py
+```
+
+---
+
+# 🧾 Estrutura do Projeto
+
+```
+IronWatch
+│
+├── IronWatchServer
+│
+├── IronWatchAdmin
+│
+├── IronWatchUser
+│
+└── IronWatchClient
+```
+
+---
+
+# 🧰 Logs
+
+Logs do servidor são exibidos no console e podem ser redirecionados para arquivo.
+
+Exemplo:
+
+```
+[INFO] Server started
+[INFO] Client connected
+[INFO] Session created
+```
+
+---
+
+# 📜 Licença
+
+Projeto distribuído sob licença **MIT**.
+
+---
+
+# 👤 Autor
+
+**GirelliDev**
+
+GitHub
+https://github.com/GirelliDev
+
+Sistema desenvolvido no Brasil, com filosofia de engenharia inspirada em robustez e simplicidade.
