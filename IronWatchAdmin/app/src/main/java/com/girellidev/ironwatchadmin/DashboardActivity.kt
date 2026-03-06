@@ -19,8 +19,8 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CompanyAdapter
 
-    private val serverHost = "181.215.45.46"
-    private val serverPort = 9999
+    private val serverHost = "181.215.45.62"
+    private val serverPort = 5555
 
     // conexão persistente
     private var socket: Socket? = null

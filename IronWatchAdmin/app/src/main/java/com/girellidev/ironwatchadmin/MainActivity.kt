@@ -18,7 +18,7 @@ import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
 
-    private val serverHost = "181.215.45.46"
+    private val serverHost = "181.215.45.62"
     private val serverPort = 5555
 
     private lateinit var prefs: SharedPreferences
