@@ -20,21 +20,21 @@ CREATE TABLE empresas (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================
--- TABELA USUÁRIOS
+-- TABELA USUARIOS
 -- ============================
 CREATE TABLE usuarios (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     empresa_id INT UNSIGNED NOT NULL,
     login VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     nome VARCHAR(100) NOT NULL DEFAULT 'Sem Nome',
     session_token VARCHAR(255),
     role TINYINT UNSIGNED NOT NULL DEFAULT 0,
     active TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+    CONSTRAINT fk_usuarios_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 -- ============================
 -- TABELA SESSOES_ADMIN
 -- ============================
@@ -45,7 +45,8 @@ CREATE TABLE sessoes_admin (
     criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expira_em DATETIME NOT NULL,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    CONSTRAINT fk_sessoes_admin_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================
@@ -54,11 +55,12 @@ CREATE TABLE sessoes_admin (
 CREATE TABLE codigos (
     code CHAR(6) NOT NULL PRIMARY KEY,
     tipo VARCHAR(50) NOT NULL,
-    empresa_id INT UNSIGNED,
+    empresa_id INT UNSIGNED NULL,
     usado TINYINT(1) NOT NULL DEFAULT 0,
     expira_em DATETIME NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE SET NULL
+    CONSTRAINT fk_codigos_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================
@@ -72,7 +74,8 @@ CREATE TABLE consultas (
     data_marcado DATETIME,
     data_consulta DATETIME,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+    CONSTRAINT fk_consultas_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================
@@ -85,7 +88,8 @@ CREATE TABLE dispositivos (
     ip VARCHAR(45) NOT NULL,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+    CONSTRAINT fk_dispositivos_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================
@@ -96,33 +100,38 @@ CREATE TABLE ultima_mensagem_usuario (
     empresa_id INT UNSIGNED NOT NULL,
     numero VARCHAR(50) NOT NULL,
     data DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+    CONSTRAINT fk_ultima_mensagem_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================
 -- TABELA EMPRESA_AI_CONFIG
 -- ============================
 CREATE TABLE empresa_ai_config (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    empresa_id INT NOT NULL,
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT UNSIGNED NOT NULL,
     provider VARCHAR(50) NOT NULL,
     api_key_encrypted TEXT NOT NULL,
     model VARCHAR(100) NOT NULL,
-    active BOOLEAN NOT NULL DEFAULT TRUE,
+    active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_empresa_ai_config_empresa
-        FOREIGN KEY (empresa_id) REFERENCES empresa(id)
-);
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================
--- TABELA EMPRESA_AI_CONFIG
+-- TABELA CHAT_MESSAGE
 -- ============================
 CREATE TABLE chat_message (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    empresa_id INT NOT NULL,
-    usuario_id INT NOT NULL,
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    empresa_id INT UNSIGNED NOT NULL,
+    usuario_id INT UNSIGNED NOT NULL,
     role VARCHAR(20) NOT NULL,
     content TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_chat_message_empresa FOREIGN KEY (empresa_id) REFERENCES empresa(id),
-    CONSTRAINT fk_chat_message_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
-);
+    CONSTRAINT fk_chat_message_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE,
+    CONSTRAINT fk_chat_message_usuario
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
