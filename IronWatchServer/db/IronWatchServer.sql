@@ -98,3 +98,31 @@ CREATE TABLE ultima_mensagem_usuario (
     data DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- ============================
+-- TABELA EMPRESA_AI_CONFIG
+-- ============================
+CREATE TABLE empresa_ai_config (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    empresa_id INT NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    api_key_encrypted TEXT NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_empresa_ai_config_empresa
+        FOREIGN KEY (empresa_id) REFERENCES empresa(id)
+);
+-- ============================
+-- TABELA EMPRESA_AI_CONFIG
+-- ============================
+CREATE TABLE chat_message (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    empresa_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_chat_message_empresa FOREIGN KEY (empresa_id) REFERENCES empresa(id),
+    CONSTRAINT fk_chat_message_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+);

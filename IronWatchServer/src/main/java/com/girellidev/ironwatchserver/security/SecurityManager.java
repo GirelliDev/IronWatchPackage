@@ -5,30 +5,47 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import com.girellidev.ironwatchserver.dao.SessionDAO;
+import com.girellidev.ironwatchserver.dao.UserDAO;
+import com.girellidev.ironwatchserver.model.Session;
+import com.girellidev.ironwatchserver.model.User;
+
 public class SecurityManager {
 
     private final UserDAO userDAO;
+    private final SessionDAO sessionDAO;
 
     public SecurityManager() {
-        this.userDAO = new UserDAO(); // inicializa conexão com banco
+        this.userDAO = new UserDAO();
+        this.sessionDAO = new SessionDAO();
     }
 
-    // Criar usuário com hash
     public boolean createUser(String login, String password, int role, int empresaId) {
         String hashed = PasswordHasher.hash(password);
+
+        User user = new User();
+        user.setLogin(login);
+        user.setPasswordHash(hashed);
+        user.setRole(role);
+        user.setEmpresaId(empresaId);
+        user.setActive(true);
+
         try {
-            return userDAO.insertUser(login, hashed, role, empresaId);
+            return userDAO.insertUser(user);
         } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
-    // Validar login
-    @SuppressWarnings("CallToPrintStackTrace")
     public boolean validateLogin(String login, String password) {
         try {
             String hash = userDAO.getPasswordHash(login);
-            if (hash == null) return false;
+
+            if (hash == null) {
+                return false;
+            }
+
             return PasswordHasher.verify(password, hash);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,33 +53,42 @@ public class SecurityManager {
         }
     }
 
-    // Gerar token de sessão e salvar no banco
-  public String createSession(String login) {
-    String token = TokenGenerator.generateSessionToken();
-    try {
-        int userId = userDAO.getUserId(login);
-        if (userId == -1) return null;
+    public String createSession(String login) {
+        String token = TokenGenerator.generateSessionToken();
 
-        LocalDateTime expiration =
-                Instant.ofEpochMilli(SessionManager.calculateExpiration(30))
-                       .atZone(ZoneId.systemDefault())
-                       .toLocalDateTime();
-
-        userDAO.insertSession(userId, token, expiration);
-
-        return token;
-    } catch (SQLException e) {
-        return null;
-    }
-}
-
-    // Validar token de sessão
-    public boolean validateSession(String token) {
         try {
-            return userDAO.isSessionValid(token);
+            int userId = userDAO.getUserId(login);
+
+            if (userId == -1) {
+                return null;
+            }
+
+            LocalDateTime expiration =
+                    Instant.ofEpochMilli(SessionManager.calculateExpiration(30))
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime();
+
+            Session session = new Session();
+            session.setUsuarioId(userId);
+            session.setToken(token);
+            session.setExpiraEm(expiration);
+            session.setAtivo(true);
+
+            boolean inserted = sessionDAO.insertSession(session);
+
+            return inserted ? token : null;
         } catch (SQLException e) {
-            return false;
+            e.printStackTrace();
+            return null;
         }
     }
 
+    public boolean validateSession(String token) {
+        try {
+            return sessionDAO.isSessionValid(token);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -25,6 +25,14 @@ public class Usuario {
     public String getPermissao() {
         return permissao;
     }
+    public class Permissao {
+
+    public static final int CLIENTE = 1;
+    public static final int EMPRESA = 2;
+    public static final int ADMIN = 3;
+    public static final int MASTER = 4;
+
+}
 
     public boolean isAtivo() {
         return ativo;
