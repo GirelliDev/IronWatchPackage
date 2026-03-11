@@ -27,6 +27,35 @@ public class SessionDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    public Session findByToken(String token) throws SQLException {
+
+    String sql =
+            "SELECT id, usuario_id, token, expira_em, ativo FROM sessoes WHERE token = ? LIMIT 1";
+
+    try (Connection connection = DatabaseConnection.getConnection();
+         PreparedStatement ps = connection.prepareStatement(sql)) {
+
+        ps.setString(1, token);
+
+        try (ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+
+                Session session = new Session();
+
+                session.setId(rs.getInt("id"));
+                session.setUsuarioId(rs.getInt("usuario_id"));
+                session.setToken(rs.getString("token"));
+                session.setExpiraEm(rs.getTimestamp("expira_em").toLocalDateTime());
+                session.setAtivo(rs.getBoolean("ativo"));
+
+                return session;
+            }
+        }
+    }
+
+    return null;
+}
 
     public boolean isSessionValid(String token) throws SQLException {
 
@@ -52,4 +81,6 @@ public class SessionDAO {
 
         return false;
     }
+
+ 
 }

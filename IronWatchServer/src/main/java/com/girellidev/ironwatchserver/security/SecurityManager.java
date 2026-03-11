@@ -91,4 +91,36 @@ public class SecurityManager {
             return false;
         }
     }
+
+    public User getUserByLogin(String login) {
+        try {
+            return userDAO.findByLogin(login);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public User getUserByToken(String token) {
+        try {
+            Session session = sessionDAO.findByToken(token);
+
+            if (session == null) {
+                return null;
+            }
+
+            if (!session.isAtivo()) {
+                return null;
+            }
+
+            if (session.getExpiraEm() == null || session.getExpiraEm().isBefore(LocalDateTime.now())) {
+                return null;
+            }
+
+            return userDAO.findById(session.getUsuarioId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
