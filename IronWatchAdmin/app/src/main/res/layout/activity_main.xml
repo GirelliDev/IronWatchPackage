@@ -55,7 +55,7 @@
         android:padding="24dp">
 
         <EditText
-            android:id="@+id/codigoInput"
+            android:id="@+id/edtToken"
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:layout_marginTop="12dp"

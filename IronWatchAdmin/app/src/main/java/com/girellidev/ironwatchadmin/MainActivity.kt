@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences("ironwatch_admin", MODE_PRIVATE)
 
-        // Se já tiver token salvo, entra direto
         val savedToken = prefs.getString("auth_token", null)
         if (!savedToken.isNullOrBlank()) {
             abrirDashboard(savedToken)
@@ -88,13 +87,12 @@ class MainActivity : AppCompatActivity() {
                     put("login", login)
                     put("password", password)
 
-                    // só envia token se o usuário preencheu
                     if (tokenInformado.isNotBlank()) {
                         put("token", tokenInformado)
                     }
                 }
 
-                writer.write("${request}\n")
+                writer.write("$request\n")
                 writer.flush()
 
                 val responseLine = reader.readLine()
@@ -107,7 +105,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val response = JSONObject(responseLine)
-
                 val success = response.optBoolean("success", false)
                 val message = response.optString("message", "Falha na autenticação")
                 val tokenRecebido = response.optString("token", "").trim()
@@ -126,7 +123,6 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         salvarToken(tokenFinal)
-
                         toast("Acesso liberado")
                         abrirDashboard(tokenFinal)
                     } else {
@@ -134,12 +130,8 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                println("Enviado: $request")
-                println("Recebido: $responseLine")
-
             } catch (e: Exception) {
                 e.printStackTrace()
-
                 withContext(Dispatchers.Main) {
                     toast("Erro ao conectar: ${e.message}")
                 }
