@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bgg"
+    android:gravity="top|center_horizontal"
+    android:orientation="vertical">
+
+    <!-- Título superior -->
+
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="match_parent"
+        android:layout_height="78dp"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:gravity="center"
+        android:text="IronWatch Admin"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <!-- Texto restrição -->
+
+    <TextView
+        android:id="@+id/textAcessoRestrito"
+        android:layout_width="360dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:gravity="center"
+        android:text="ACESSO RESTRITO"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textDescricao"
+        android:layout_width="360dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_mono_bold"
+        android:gravity="center"
+        android:text="Autentique-se para acessar o painel administrativo"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Caixa de login -->
+
+    <LinearLayout
+        android:id="@+id/loginbox"
+        android:layout_width="354dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_loginbox"
+        android:elevation="6dp"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Login -->
+
+        <EditText
+            android:id="@+id/edtLogin"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_edittext"
+            android:fontFamily="@font/roboto_mono_bold"
+            android:hint="Login"
+            android:inputType="text"
+            android:padding="18dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA" />
+
+        <!-- Senha -->
+
+        <EditText
+            android:id="@+id/edtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_edittext"
+            android:fontFamily="@font/roboto_mono_bold"
+            android:hint="Senha"
+            android:inputType="textPassword"
+            android:padding="18dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA" />
+
+        <!-- Botão -->
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button"
+            android:fontFamily="@font/roboto_mono_bold"
+            android:text="ENTRAR"
+            android:textAllCaps="true"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -31,9 +31,8 @@ class DashboardActivity : AppCompatActivity() {
     private val serverHost = "181.215.45.62"
     private val serverPort = 5555
 
-    // TEMPORÁRIO: depois o ideal é vir da tela de login
-    private val appLogin = "girellidev"
-    private val appPassword = "Kv13013+"
+    private var appLogin: String = ""
+    private var appPassword: String = ""
 
     private var socket: Socket? = null
     private var writer: OutputStreamWriter? = null
@@ -47,6 +46,16 @@ class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
+
+        appLogin = intent.getStringExtra("login") ?: ""
+        appPassword = intent.getStringExtra("password") ?: ""
+        currentToken = intent.getStringExtra("token") ?: ""
+
+        if (appLogin.isBlank() || appPassword.isBlank()) {
+            Toast.makeText(this, "Credenciais inválidas", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         drawerLayout = findViewById(R.id.drawer_layout)
         recyclerView = findViewById(R.id.recyclerView)
@@ -83,7 +92,13 @@ class DashboardActivity : AppCompatActivity() {
 
                 log("Conectado ao servidor")
                 startListener()
-                sendLogin()
+
+                if (currentToken.isBlank()) {
+                    sendLogin()
+                } else {
+                    delay(200)
+                    requestCompanies()
+                }
 
             } catch (e: Exception) {
                 showToast("Falha na conexão: ${e.message}")
@@ -131,7 +146,6 @@ class DashboardActivity : AppCompatActivity() {
 
             val json = JSONObject(trimmed)
 
-            // Se veio token, guarda e já pede empresas
             if (json.has("token")) {
                 val receivedToken = json.optString("token", "").trim()
 
@@ -144,7 +158,6 @@ class DashboardActivity : AppCompatActivity() {
                 }
             }
 
-            // Resposta direta com companies na raiz
             if (json.optBoolean("success", false) && json.has("companies")) {
                 val companies = parseCompanies(json.getJSONArray("companies"))
                 withContext(Dispatchers.Main) {
@@ -153,7 +166,6 @@ class DashboardActivity : AppCompatActivity() {
                 return
             }
 
-            // Resposta com data.companies
             if (json.optBoolean("success", false) && json.has("data")) {
                 val data = json.optJSONObject("data")
 

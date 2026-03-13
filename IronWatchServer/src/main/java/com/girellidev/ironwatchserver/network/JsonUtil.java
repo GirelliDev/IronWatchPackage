@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 
 public class JsonUtil {
 
-    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
+    private static final Gson GSON = new GsonBuilder()
+            .serializeNulls()
+            .create();
 
     private JsonUtil() {
     }
