@@ -26,6 +26,8 @@ public class TcpServer {
 
                 Socket socket = server.accept();
 
+                System.out.println("[TCP] Cliente conectado: " + socket.getInetAddress());
+
                 new Thread(() -> handle(socket)).start();
 
             }
@@ -52,17 +54,30 @@ public class TcpServer {
                     true
             );
 
-            String request = reader.readLine();
+            String request;
 
-            String response = ProtocolHandler.handle(request);
+            while ((request = reader.readLine()) != null) {
 
-            writer.println(response);
+                System.out.println("[TCP] RECEBIDO: " + request);
 
-            socket.close();
+                String response = ProtocolHandler.handle(request);
+
+                System.out.println("[TCP] RESPOSTA: " + response);
+
+                writer.println(response);
+
+            }
 
         } catch (Exception e) {
 
-            System.out.println("Erro cliente TCP");
+            System.out.println("[TCP] Cliente desconectado");
+
+        } finally {
+
+            try {
+                socket.close();
+            } catch (Exception ignored) {
+            }
 
         }
 
