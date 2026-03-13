@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bege"
-    android:gravity="center_horizontal"
+    android:background="@drawable/bgg"
+    android:gravity="top|center_horizontal"
     android:orientation="vertical">
 
     <TextView
@@ -15,57 +15,40 @@
         android:gravity="center"
         android:text="IronWatch Admin"
         android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Display1"
-        android:textColor="#ffffff"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
-    <!-- Caixa do login -->
-
     <TextView
-
-        android:id="@+id/textView"
+        android:id="@+id/textAcessoRestrito"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
-<<<<<<< Updated upstream
-        android:layout_marginTop="155dp"
-=======
-        android:layout_marginTop="200dp"
->>>>>>> Stashed changes
+        android:layout_marginTop="120dp"
         android:fontFamily="@font/roboto_mono_bold"
+        android:gravity="center"
         android:text="ACESSO RESTRITO"
         android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:textColor="#ffffff"
-<<<<<<< Updated upstream
+        android:textColor="#FFFFFF"
         android:textSize="25sp"
         android:textStyle="bold" />
 
     <TextView
-
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-=======
-        android:textStyle="bold" />
-    <TextView
-
-        android:id="@+id/textView"
+        android:id="@+id/textDescricao"
         android:layout_width="367dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
->>>>>>> Stashed changes
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_mono_bold"
-        android:text="Insira o Código rotativo fornecido pelo Servidor"
+        android:gravity="center"
+        android:text="Insira o código rotativo fornecido pelo servidor"
         android:textAlignment="center"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:textColor="#ffffff"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <LinearLayout
         android:id="@+id/loginbox"
         android:layout_width="354dp"
-        android:layout_height="242dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_loginbox"
         android:elevation="4dp"
@@ -76,12 +59,12 @@
             android:id="@+id/codigoInput"
             android:layout_width="match_parent"
             android:layout_height="68dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="12dp"
             android:background="@drawable/bg_edittext"
             android:hint="Código"
             android:inputType="text"
             android:padding="20dp"
-            android:textColor="#ffffff"
+            android:textColor="#FFFFFF"
             android:textColorHint="#AAAAAA" />
 
         <Button
@@ -93,8 +76,7 @@
             android:fontFamily="@font/roboto_mono_bold"
             android:text="Entrar"
             android:textAllCaps="true"
-            android:textColor="#ffffff" />
+            android:textColor="#FFFFFF" />
     </LinearLayout>
-
 
 </LinearLayout>
