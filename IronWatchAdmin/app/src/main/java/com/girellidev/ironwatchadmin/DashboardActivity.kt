@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -55,6 +57,7 @@ class DashboardActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnRefresh).setOnClickListener {
             requestCompanies()
+            drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         findViewById<Button>(R.id.btnLogout).setOnClickListener {
@@ -99,14 +102,8 @@ class DashboardActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 log("Listener encerrado: ${e.message}")
-                withContext(Dispatchers.Main) {
-                    if (!isFinishing && !isDestroyed) {
-                        Toast.makeText(
-                            this@DashboardActivity,
-                            "Conexão encerrada: ${e.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                if (!isFinishing && !isDestroyed) {
+                    showToast("Conexão encerrada: ${e.message}")
                 }
             }
         }
@@ -114,64 +111,99 @@ class DashboardActivity : AppCompatActivity() {
 
     private suspend fun handleServerMessage(line: String) {
         val trimmed = line.trim()
-
         log("SERVER -> $trimmed")
 
         try {
+            // Caso servidor responda no formato legado: TOKEN:abc123
             if (trimmed.startsWith("TOKEN:")) {
                 val newToken = trimmed.removePrefix("TOKEN:").trim()
                 currentToken = newToken
 
+                showToast("Token atualizado")
+                delay(200)
+                requestCompanies()
+                return
+            }
+
+            if (!trimmed.startsWith("{")) {
+                log("Mensagem não tratada: $trimmed")
+                return
+            }
+
+            val json = JSONObject(trimmed)
+
+            // Token em JSON
+            if (json.has("token") && currentToken.isBlank()) {
+                currentToken = json.optString("token", "")
+                if (currentToken.isNotBlank()) {
+                    showToast("Token atualizado")
+                    delay(200)
+                    requestCompanies()
+                    return
+                }
+            }
+
+            // Lista de empresas em companies
+            if (json.optBoolean("success", false) && json.has("companies")) {
+                val companies = parseCompanies(json.getJSONArray("companies"))
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@DashboardActivity,
-                        "Token atualizado",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    adapter.setCompanies(companies)
                 }
                 return
             }
 
-            if (trimmed.startsWith("{")) {
-                val json = JSONObject(trimmed)
-
-                when {
-                    json.optBoolean("success", false) && json.has("companies") -> {
-                        val companiesJson = json.getJSONArray("companies")
-                        val companies = mutableListOf<Company>()
-
-                        for (i in 0 until companiesJson.length()) {
-                            val c = companiesJson.getJSONObject(i)
-                            companies.add(
-                                Company(
-                                    c.optString("Nome", "Sem nome"),
-                                    c.optInt("is_active", 0)
-                                )
-                            )
-                        }
-
-                        withContext(Dispatchers.Main) {
-                            adapter.setCompanies(companies)
-                        }
+            // Caso venha dentro de data.companies
+            if (json.optBoolean("success", false) && json.has("data")) {
+                val data = json.optJSONObject("data")
+                if (data != null && data.has("companies")) {
+                    val companies = parseCompanies(data.getJSONArray("companies"))
+                    withContext(Dispatchers.Main) {
+                        adapter.setCompanies(companies)
                     }
-
-                    json.has("message") -> {
-                        val message = json.optString("message", "Resposta recebida")
-                        showToast(message)
-                    }
-
-                    else -> {
-                        log("JSON recebido sem tratamento específico")
-                    }
+                    return
                 }
+            }
+
+            if (json.has("message")) {
+                val message = json.optString("message", "Resposta recebida")
+                showToast(message)
                 return
             }
 
-            log("Mensagem não tratada: $trimmed")
-
+            log("JSON recebido sem tratamento específico")
         } catch (e: Exception) {
             log("Erro ao processar mensagem: ${e.message}")
         }
+    }
+
+    private fun parseCompanies(companiesJson: JSONArray): List<Company> {
+        val companies = mutableListOf<Company>()
+
+        for (i in 0 until companiesJson.length()) {
+            val c = companiesJson.getJSONObject(i)
+
+            val nome = when {
+                c.has("Nome") -> c.optString("Nome", "Sem nome")
+                c.has("nome") -> c.optString("nome", "Sem nome")
+                c.has("name") -> c.optString("name", "Sem nome")
+                else -> "Sem nome"
+            }
+
+            val isActive = when {
+                c.has("is_active") -> c.optInt("is_active", 0)
+                c.has("active") -> if (c.optBoolean("active", false)) 1 else 0
+                else -> 0
+            }
+
+            companies.add(
+                Company(
+                    nome = nome,
+                    isActive = isActive
+                )
+            )
+        }
+
+        return companies
     }
 
     private fun requestCompanies() {

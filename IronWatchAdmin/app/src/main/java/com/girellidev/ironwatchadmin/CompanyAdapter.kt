@@ -6,33 +6,50 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-data class Company(val nome: String, val isActive: Int)
-
 class CompanyAdapter : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() {
 
     private val companies = mutableListOf<Company>()
 
-    fun setCompanies(list: List<Company>) {
+    fun setCompanies(newCompanies: List<Company>) {
         companies.clear()
-        companies.addAll(list)
+        companies.addAll(newCompanies)
         notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompanyViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_company, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_company, parent, false)
         return CompanyViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CompanyViewHolder, position: Int) {
-        val company = companies[position]
-        holder.companyName.text = company.nome
-        holder.statusDot.setBackgroundColor(if (company.isActive == 1) 0xFF00FF00.toInt() else 0xFFFF0000.toInt())
+        holder.bind(companies[position])
     }
 
     override fun getItemCount(): Int = companies.size
 
-    class CompanyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val companyName: TextView = view.findViewById(R.id.companyName)
-        val statusDot: View = view.findViewById(R.id.statusDot)
+    class CompanyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val viewStatus: View = itemView.findViewById(R.id.viewStatus)
+        private val txtCompanyName: TextView = itemView.findViewById(R.id.txtCompanyName)
+        private val txtCompanyStatus: TextView = itemView.findViewById(R.id.txtCompanyStatus)
+        private val txtStatusBadge: TextView = itemView.findViewById(R.id.txtStatusBadge)
+
+        fun bind(company: Company) {
+            val isOnline = company.isActive == 1
+
+            txtCompanyName.text = company.nome
+
+            if (isOnline) {
+                viewStatus.setBackgroundResource(R.drawable.status_online_circle)
+                txtCompanyStatus.text = "Sistema ativo e conectado"
+                txtStatusBadge.text = "ONLINE"
+                txtStatusBadge.setTextColor(0xFF00E676.toInt())
+            } else {
+                viewStatus.setBackgroundResource(R.drawable.status_offline_circle)
+                txtCompanyStatus.text = "Sistema inativo ou desconectado"
+                txtStatusBadge.text = "OFFLINE"
+                txtStatusBadge.setTextColor(0xFFE6001B.toInt())
+            }
+        }
     }
 }

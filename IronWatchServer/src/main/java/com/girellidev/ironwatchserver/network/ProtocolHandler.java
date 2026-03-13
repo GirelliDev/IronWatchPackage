@@ -1,5 +1,7 @@
 package com.girellidev.ironwatchserver.network;
 
+import java.util.Map;
+
 import com.girellidev.ironwatchserver.model.User;
 import com.girellidev.ironwatchserver.security.AuthCode;
 import com.girellidev.ironwatchserver.security.CodeManager;
@@ -7,11 +9,13 @@ import com.girellidev.ironwatchserver.security.SecurityManager;
 import com.girellidev.ironwatchserver.security.Session;
 import com.girellidev.ironwatchserver.security.SessionManager;
 import com.girellidev.ironwatchserver.service.ChatService;
+import com.girellidev.ironwatchserver.service.CompanyService;
 
 public class ProtocolHandler {
 
     private static final SecurityManager SECURITY_MANAGER = new SecurityManager();
     private static final ChatService CHAT_SERVICE = new ChatService();
+    private static final CompanyService COMPANY_SERVICE = new CompanyService();
 
     private ProtocolHandler() {
     }
@@ -96,6 +100,7 @@ public class ProtocolHandler {
             case "SESSION_VALIDATE" -> handleSessionValidate(request);
             case "USER_CREATE" -> handleUserCreate(request);
             case "CHAT_SEND" -> handleChatSend(request);
+            case "LIST_COMPANIES" -> handleListCompanies(request);
             default -> RouteResponse.error("Rota invalida: " + request.getAction());
         };
 
@@ -198,6 +203,31 @@ public class ProtocolHandler {
         String response = CHAT_SERVICE.processMessage(user, request.getMessage());
 
         return RouteResponse.ok("Mensagem processada com sucesso", response);
+    }
+
+    private static RouteResponse handleListCompanies(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            Map<String, Object> data = COMPANY_SERVICE.listCompaniesPayload();
+
+            return RouteResponse.ok(
+                    "Empresas carregadas com sucesso",
+                    data
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao listar empresas: " + e.getMessage());
+        }
     }
 
     private static boolean isBlank(String value) {

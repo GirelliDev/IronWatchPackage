@@ -1,31 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#1e1e1e"
-    android:orientation="horizontal"
-    android:padding="10dp"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/bg_card_empresa"
     android:gravity="center_vertical"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:clipToPadding="false"
-    android:paddingEnd="16dp">
-
-    <TextView
-        android:id="@+id/companyName"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        android:layout_weight="1"
-        android:textStyle="bold" />
+    android:orientation="horizontal"
+    android:padding="14dp">
 
     <View
-        android:id="@+id/statusDot"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:layout_marginStart="8dp"
-        android:layout_gravity="center_vertical"
-        android:clipToOutline="true"
-        android:outlineProvider="background" />
+        android:id="@+id/viewStatus"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/status_offline_circle" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtCompanyName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Empresa"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txtCompanyStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Status do sistema"
+            android:textColor="#A8A8A8"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtStatusBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OFFLINE"
+        android:textColor="#E6001B"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+
 </LinearLayout>

@@ -44,6 +44,10 @@ public class RouteResponse {
         return new RouteResponse(false, message);
     }
 
+    public static RouteResponse error(String message, Object data) {
+        return new RouteResponse(false, message, data);
+    }
+
     public boolean isSuccess() {
         return success;
     }

@@ -91,114 +91,7 @@
                 android:layout_marginTop="2dp" />
         </LinearLayout>
 
-        <!-- CARD PLACEHOLDER -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_card_empresa"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="14dp">
-
-            <!-- STATUS -->
-            <View
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:background="@drawable/status_online_circle"
-                android:layout_marginEnd="12dp" />
-
-            <!-- INFOS -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PLACEHOLDER EMPRESA"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="STATUS DO SISTEMA AQUI"
-                    android:textColor="#A8A8A8"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <!-- STATUS TEXTO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ONLINE"
-                android:textColor="#00E676"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-        <!-- CARD PLACEHOLDER -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/bg_card_empresa"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="14dp">
-
-            <!-- STATUS -->
-            <View
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:background="@drawable/status_offline_circle"
-                android:layout_marginEnd="12dp" />
-
-            <!-- INFOS -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PLACEHOLDER EMPRESA"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="STATUS DO SISTEMA AQUI"
-                    android:textColor="#A8A8A8"
-                    android:textSize="12sp"
-                    android:layout_marginTop="2dp" />
-            </LinearLayout>
-
-            <!-- STATUS TEXTO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OFFLINE"
-                android:textColor="#E6001B"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <!-- LISTA -->
+        <!-- LISTA REAL -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
@@ -226,7 +119,6 @@
             android:orientation="vertical"
             android:padding="18dp">
 
-            <!-- CABEÇALHO MENU -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
