@@ -7,10 +7,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -23,6 +24,11 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: SharedPreferences
 
+    private lateinit var edtLogin: EditText
+    private lateinit var edtPassword: EditText
+    private lateinit var edtToken: EditText
+    private lateinit var btnLogin: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,87 +37,120 @@ class MainActivity : AppCompatActivity() {
         // Se já tiver token salvo, entra direto
         val savedToken = prefs.getString("auth_token", null)
         if (!savedToken.isNullOrBlank()) {
-            abrirDashboard()
+            abrirDashboard(savedToken)
             return
         }
 
         setContentView(R.layout.activity_main)
 
-        val codigoInput = findViewById<EditText>(R.id.codigoInput)
-        val btnEnviar = findViewById<Button>(R.id.btnEnviar)
+        edtLogin = findViewById(R.id.edtLogin)
+        edtPassword = findViewById(R.id.edtPassword)
+        edtToken = findViewById(R.id.edtToken)
+        btnLogin = findViewById(R.id.btnLogin)
 
-        btnEnviar.setOnClickListener {
-            val codigo = codigoInput.text.toString().trim()
+        btnLogin.setOnClickListener {
+            val login = edtLogin.text.toString().trim()
+            val password = edtPassword.text.toString().trim()
+            val token = edtToken.text.toString().trim()
 
-            if (codigo.isEmpty()) {
-                Toast.makeText(this, "Digite o código", Toast.LENGTH_SHORT).show()
-            } else {
-                autenticarCodigo(codigo)
+            if (login.isBlank()) {
+                toast("Digite o login")
+                return@setOnClickListener
             }
+
+            if (password.isBlank()) {
+                toast("Digite a senha")
+                return@setOnClickListener
+            }
+
+            autenticar(login, password, token)
         }
     }
 
-    private fun autenticarCodigo(codigo: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun autenticar(login: String, password: String, tokenInformado: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            var socket: Socket? = null
+            var writer: OutputStreamWriter? = null
+            var reader: BufferedReader? = null
+
             try {
-                Socket(serverHost, serverPort).use { socket ->
-                    val writer = OutputStreamWriter(socket.getOutputStream())
-                    val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
+                withContext(Dispatchers.Main) {
+                    btnLogin.isEnabled = false
+                    btnLogin.text = "Entrando..."
+                }
 
-                    val payload = "AUTH|$codigo\n"
-                    writer.write(payload)
-                    writer.flush()
+                socket = Socket(serverHost, serverPort)
+                writer = OutputStreamWriter(socket.getOutputStream())
+                reader = BufferedReader(InputStreamReader(socket.getInputStream()))
 
-                    val response = reader.readLine()
+                val request = JSONObject().apply {
+                    put("action", "AUTH_LOGIN")
+                    put("login", login)
+                    put("password", password)
 
+                    // só envia token se o usuário preencheu
+                    if (tokenInformado.isNotBlank()) {
+                        put("token", tokenInformado)
+                    }
+                }
+
+                writer.write("${request}\n")
+                writer.flush()
+
+                val responseLine = reader.readLine()
+
+                if (responseLine.isNullOrBlank()) {
                     withContext(Dispatchers.Main) {
-                        if (response.isNullOrBlank()) {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Servidor não respondeu",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        toast("Servidor não respondeu")
+                    }
+                    return@launch
+                }
+
+                val response = JSONObject(responseLine)
+
+                val success = response.optBoolean("success", false)
+                val message = response.optString("message", "Falha na autenticação")
+                val tokenRecebido = response.optString("token", "").trim()
+
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        val tokenFinal = when {
+                            tokenRecebido.isNotBlank() && tokenRecebido != "null" -> tokenRecebido
+                            tokenInformado.isNotBlank() -> tokenInformado
+                            else -> ""
+                        }
+
+                        if (tokenFinal.isBlank()) {
+                            toast("Login OK, mas nenhum token foi recebido")
                             return@withContext
                         }
 
-                        if (response.startsWith("OK|")) {
-                            val token = response.substringAfter("OK|").trim()
+                        salvarToken(tokenFinal)
 
-                            salvarToken(token)
-
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Acesso liberado",
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                            abrirDashboard()
-                        } else if (response == "FAILED") {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Código inválido",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Resposta inesperada: $response",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+                        toast("Acesso liberado")
+                        abrirDashboard(tokenFinal)
+                    } else {
+                        toast(message)
                     }
-
-                    println("Enviado: AUTH|$codigo | Recebido: $response")
                 }
+
+                println("Enviado: $request")
+                println("Recebido: $responseLine")
+
             } catch (e: Exception) {
                 e.printStackTrace()
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Erro ao conectar: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    toast("Erro ao conectar: ${e.message}")
+                }
+            } finally {
+                try { reader?.close() } catch (_: Exception) {}
+                try { writer?.close() } catch (_: Exception) {}
+                try { socket?.close() } catch (_: Exception) {}
+
+                withContext(Dispatchers.Main) {
+                    btnLogin.isEnabled = true
+                    btnLogin.text = "ENTRAR"
                 }
             }
         }
@@ -123,9 +162,15 @@ class MainActivity : AppCompatActivity() {
             .apply()
     }
 
-    private fun abrirDashboard() {
-        val intent = Intent(this, DashboardActivity::class.java)
+    private fun abrirDashboard(token: String) {
+        val intent = Intent(this, DashboardActivity::class.java).apply {
+            putExtra("token", token)
+        }
         startActivity(intent)
         finish()
+    }
+
+    private fun toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

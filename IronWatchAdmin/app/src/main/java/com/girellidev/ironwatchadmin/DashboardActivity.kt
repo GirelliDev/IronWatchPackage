@@ -12,10 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -31,9 +29,6 @@ class DashboardActivity : AppCompatActivity() {
     private val serverHost = "181.215.45.62"
     private val serverPort = 5555
 
-    private var appLogin: String = ""
-    private var appPassword: String = ""
-
     private var socket: Socket? = null
     private var writer: OutputStreamWriter? = null
     private var reader: BufferedReader? = null
@@ -46,16 +41,6 @@ class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
-
-        appLogin = intent.getStringExtra("login") ?: ""
-        appPassword = intent.getStringExtra("password") ?: ""
-        currentToken = intent.getStringExtra("token") ?: ""
-
-        if (appLogin.isBlank() || appPassword.isBlank()) {
-            Toast.makeText(this, "Credenciais inválidas", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
 
         drawerLayout = findViewById(R.id.drawer_layout)
         recyclerView = findViewById(R.id.recyclerView)
@@ -70,7 +55,6 @@ class DashboardActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnRefresh).setOnClickListener {
             requestCompanies()
-            drawerLayout.closeDrawer(GravityCompat.START)
         }
 
         findViewById<Button>(R.id.btnLogout).setOnClickListener {
@@ -84,36 +68,24 @@ class DashboardActivity : AppCompatActivity() {
     private fun startConnection() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                disconnect()
-
                 socket = Socket(serverHost, serverPort)
                 writer = OutputStreamWriter(socket!!.getOutputStream())
                 reader = BufferedReader(InputStreamReader(socket!!.getInputStream()))
 
                 log("Conectado ao servidor")
+
                 startListener()
 
-                if (currentToken.isBlank()) {
-                    sendLogin()
-                } else {
-                    delay(200)
-                    requestCompanies()
-                }
+                sendJson(
+                    JSONObject().apply {
+                        put("action", "new-token")
+                    }
+                )
 
             } catch (e: Exception) {
                 showToast("Falha na conexão: ${e.message}")
             }
         }
-    }
-
-    private suspend fun sendLogin() {
-        val loginRequest = JSONObject().apply {
-            put("action", "AUTH_LOGIN")
-            put("login", appLogin)
-            put("password", appPassword)
-        }
-
-        sendJson(loginRequest)
     }
 
     private fun startListener() {
@@ -127,8 +99,14 @@ class DashboardActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 log("Listener encerrado: ${e.message}")
-                if (!isFinishing && !isDestroyed) {
-                    showToast("Conexão encerrada: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) {
+                        Toast.makeText(
+                            this@DashboardActivity,
+                            "Conexão encerrada: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
@@ -136,108 +114,77 @@ class DashboardActivity : AppCompatActivity() {
 
     private suspend fun handleServerMessage(line: String) {
         val trimmed = line.trim()
+
         log("SERVER -> $trimmed")
 
         try {
-            if (!trimmed.startsWith("{")) {
-                log("Mensagem não tratada: $trimmed")
-                return
-            }
+            if (trimmed.startsWith("TOKEN:")) {
+                val newToken = trimmed.removePrefix("TOKEN:").trim()
+                currentToken = newToken
 
-            val json = JSONObject(trimmed)
-
-            if (json.has("token")) {
-                val receivedToken = json.optString("token", "").trim()
-
-                if (receivedToken.isNotBlank() && receivedToken != "null" && receivedToken != currentToken) {
-                    currentToken = receivedToken
-                    showToast("Login realizado com sucesso")
-                    delay(200)
-                    requestCompanies()
-                    return
-                }
-            }
-
-            if (json.optBoolean("success", false) && json.has("companies")) {
-                val companies = parseCompanies(json.getJSONArray("companies"))
                 withContext(Dispatchers.Main) {
-                    adapter.setCompanies(companies)
+                    Toast.makeText(
+                        this@DashboardActivity,
+                        "Token atualizado",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 return
             }
 
-            if (json.optBoolean("success", false) && json.has("data")) {
-                val data = json.optJSONObject("data")
+            if (trimmed.startsWith("{")) {
+                val json = JSONObject(trimmed)
 
-                if (data != null && data.has("companies")) {
-                    val companies = parseCompanies(data.getJSONArray("companies"))
-                    withContext(Dispatchers.Main) {
-                        adapter.setCompanies(companies)
+                when {
+                    json.optBoolean("success", false) && json.has("companies") -> {
+                        val companiesJson = json.getJSONArray("companies")
+                        val companies = mutableListOf<Company>()
+
+                        for (i in 0 until companiesJson.length()) {
+                            val c = companiesJson.getJSONObject(i)
+                            companies.add(
+                                Company(
+                                    c.optString("Nome", "Sem nome"),
+                                    c.optInt("is_active", 0)
+                                )
+                            )
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            adapter.setCompanies(companies)
+                        }
                     }
-                    return
-                }
-            }
 
-            if (json.has("message")) {
-                val message = json.optString("message", "Resposta recebida")
-                showToast(message)
+                    json.has("message") -> {
+                        val message = json.optString("message", "Resposta recebida")
+                        showToast(message)
+                    }
+
+                    else -> {
+                        log("JSON recebido sem tratamento específico")
+                    }
+                }
                 return
             }
 
-            log("JSON recebido sem tratamento específico")
+            log("Mensagem não tratada: $trimmed")
 
         } catch (e: Exception) {
             log("Erro ao processar mensagem: ${e.message}")
         }
     }
 
-    private fun parseCompanies(companiesJson: JSONArray): List<Company> {
-        val companies = mutableListOf<Company>()
-
-        for (i in 0 until companiesJson.length()) {
-            val c = companiesJson.getJSONObject(i)
-
-            val nome = when {
-                c.has("Nome") -> c.optString("Nome", "Sem nome")
-                c.has("nome") -> c.optString("nome", "Sem nome")
-                c.has("name") -> c.optString("name", "Sem nome")
-                else -> "Sem nome"
-            }
-
-            val isActive = when {
-                c.has("is_active") -> c.optInt("is_active", 0)
-                c.has("active") -> if (c.optBoolean("active", false)) 1 else 0
-                else -> 0
-            }
-
-            companies.add(
-                Company(
-                    nome = nome,
-                    isActive = isActive
-                )
-            )
-        }
-
-        return companies
-    }
-
     private fun requestCompanies() {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
-                if (socket == null || socket!!.isClosed || writer == null || reader == null) {
-                    showToast("Reconectando ao servidor...")
-                    startConnection()
-                    return@launch
-                }
-
                 if (currentToken.isBlank()) {
-                    showToast("Aguardando autenticação...")
+                    showToast("Aguardando token do servidor...")
                     return@launch
                 }
 
                 val request = JSONObject().apply {
                     put("token", currentToken)
-                    put("action", "LIST_COMPANIES")
+                    put("action", "list-companies")
                 }
 
                 sendJson(request)
@@ -280,7 +227,6 @@ class DashboardActivity : AppCompatActivity() {
             socket?.close()
         } catch (_: Exception) {
         } finally {
-            listenerJob = null
             reader = null
             writer = null
             socket = null
