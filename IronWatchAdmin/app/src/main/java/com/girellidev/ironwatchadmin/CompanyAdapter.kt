@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CompanyAdapter : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() {
+class CompanyAdapter(
+    private val onCompanyClick: (Company) -> Unit
+) : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() {
 
     private val companies = mutableListOf<Company>()
 
@@ -23,7 +25,7 @@ class CompanyAdapter : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() 
     }
 
     override fun onBindViewHolder(holder: CompanyViewHolder, position: Int) {
-        holder.bind(companies[position])
+        holder.bind(companies[position], onCompanyClick)
     }
 
     override fun getItemCount(): Int = companies.size
@@ -34,7 +36,7 @@ class CompanyAdapter : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() 
         private val txtCompanyStatus: TextView = itemView.findViewById(R.id.txtCompanyStatus)
         private val txtStatusBadge: TextView = itemView.findViewById(R.id.txtStatusBadge)
 
-        fun bind(company: Company) {
+        fun bind(company: Company, onCompanyClick: (Company) -> Unit) {
             val isOnline = company.isActive == 1
 
             txtCompanyName.text = company.nome
@@ -49,6 +51,10 @@ class CompanyAdapter : RecyclerView.Adapter<CompanyAdapter.CompanyViewHolder>() 
                 txtCompanyStatus.text = "Sistema inativo ou desconectado"
                 txtStatusBadge.text = "OFFLINE"
                 txtStatusBadge.setTextColor(0xFFE6001B.toInt())
+            }
+
+            itemView.setOnClickListener {
+                onCompanyClick(company)
             }
         }
     }

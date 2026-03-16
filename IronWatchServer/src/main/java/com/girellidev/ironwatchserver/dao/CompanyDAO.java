@@ -15,7 +15,7 @@ public class CompanyDAO {
 
         String sql = """
                 SELECT Nome, is_active
-                FROM Empresa
+                FROM empresas
                 ORDER BY Nome ASC
                 """;
 

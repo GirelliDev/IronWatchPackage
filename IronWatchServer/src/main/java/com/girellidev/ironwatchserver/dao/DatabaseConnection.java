@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
 
     private static final String URL =
-            "jdbc:mysql://localhost:3306/GDS_IronWatch?useSSL=false&serverTimezone=UTC";
+            "jdbc:mysql://localhost:3306/gds_ironwatch?useSSL=false&serverTimezone=UTC";
 
     private static final String USER = "ironwatch";
     private static final String PASSWORD = "DNMQTDC";

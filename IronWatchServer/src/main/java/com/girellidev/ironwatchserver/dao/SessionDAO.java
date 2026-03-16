@@ -14,7 +14,7 @@ public class SessionDAO {
     public boolean insertSession(Session session) throws SQLException {
 
         String sql =
-                "INSERT INTO sessoes (usuario_id, token, expira_em, ativo) VALUES (?, ?, ?, ?)";
+                "INSERT INTO sessoes_admin (usuario_id, token, expira_em, ativo) VALUES (?, ?, ?, ?)";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -30,7 +30,7 @@ public class SessionDAO {
     public Session findByToken(String token) throws SQLException {
 
     String sql =
-            "SELECT id, usuario_id, token, expira_em, ativo FROM sessoes WHERE token = ? LIMIT 1";
+            "SELECT id, usuario_id, token, expira_em, ativo FROM sessoes_admin WHERE token = ? LIMIT 1";
 
     try (Connection connection = DatabaseConnection.getConnection();
          PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -60,7 +60,7 @@ public class SessionDAO {
     public boolean isSessionValid(String token) throws SQLException {
 
         String sql =
-                "SELECT expira_em, ativo FROM sessoes WHERE token = ?";
+                "SELECT expira_em, ativo FROM sessoes_admin WHERE token = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {

@@ -39,6 +39,7 @@ class DashboardActivity : AppCompatActivity() {
     private var currentToken: String = ""
 
     private var listenerJob: Job? = null
+    private var isConnecting = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +57,11 @@ class DashboardActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = CompanyAdapter()
+
+        adapter = CompanyAdapter { company ->
+            abrirDashboardEmpresa(company)
+        }
+
         recyclerView.adapter = adapter
 
         findViewById<ImageView>(R.id.menuButton).setOnClickListener {
@@ -81,9 +86,22 @@ class DashboardActivity : AppCompatActivity() {
         startConnection()
     }
 
+    private fun abrirDashboardEmpresa(company: Company) {
+        val intent = Intent(this, CompanyDashboardActivity::class.java).apply {
+            putExtra("token", currentToken)
+            putExtra("company_id", company.id)
+            putExtra("company_name", company.nome)
+            putExtra("company_active", company.isActive)
+        }
+        startActivity(intent)
+    }
+
     private fun startConnection() {
+        if (isConnecting) return
+
         lifecycleScope.launch(Dispatchers.IO) {
             try {
+                isConnecting = true
                 disconnect()
 
                 socket = Socket(serverHost, serverPort)
@@ -92,11 +110,12 @@ class DashboardActivity : AppCompatActivity() {
 
                 log("Conectado ao servidor")
                 startListener()
-
                 requestCompanies()
 
             } catch (e: Exception) {
                 showToast("Falha na conexão: ${e.message}")
+            } finally {
+                isConnecting = false
             }
         }
     }
@@ -169,21 +188,40 @@ class DashboardActivity : AppCompatActivity() {
         for (i in 0 until companiesJson.length()) {
             val c = companiesJson.getJSONObject(i)
 
+            val id = when {
+                c.has("id") -> c.optInt("id", -1)
+                c.has("ID") -> c.optInt("ID", -1)
+                c.has("empresaId") -> c.optInt("empresaId", -1)
+                c.has("empresa_id") -> c.optInt("empresa_id", -1)
+                else -> -1
+            }
+
             val nome = when {
                 c.has("Nome") -> c.optString("Nome", "Sem nome")
                 c.has("nome") -> c.optString("nome", "Sem nome")
                 c.has("name") -> c.optString("name", "Sem nome")
+                c.has("razaoSocial") -> c.optString("razaoSocial", "Sem nome")
                 else -> "Sem nome"
             }
 
             val isActive = when {
                 c.has("is_active") -> c.optInt("is_active", 0)
-                c.has("active") -> if (c.optBoolean("active", false)) 1 else 0
+                c.has("isActive") -> c.optInt("isActive", 0)
+                c.has("active") -> {
+                    val activeValue = c.opt("active")
+                    when (activeValue) {
+                        is Boolean -> if (activeValue) 1 else 0
+                        is Int -> activeValue
+                        is String -> if (activeValue == "1" || activeValue.equals("true", true)) 1 else 0
+                        else -> 0
+                    }
+                }
                 else -> 0
             }
 
             companies.add(
                 Company(
+                    id = id,
                     nome = nome,
                     isActive = isActive
                 )
