@@ -10,56 +10,45 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <TextView
-            android:id="@+id/txtTituloCrud"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:gravity="center"
-            android:text="CRUD - Empresa"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
         <Button
-            android:id="@+id/btnCriar"
+            android:id="@+id/btnEditarEmpresa"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#2E7D32"
-            android:text="Criar"
+            android:backgroundTint="#c01523"
+            android:text="Editar Empresa"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btnListar"
+            android:id="@+id/btnGerarCodigo"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#1565C0"
-            android:text="Listar"
+            android:backgroundTint="#7d2e32"
+            android:text="Gerar Código"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btnEditar"
+            android:id="@+id/btnToggleAtiva"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="12dp"
-            android:backgroundTint="#EF6C00"
-            android:text="Editar"
+            android:backgroundTint="#ef0000"
+            android:text="Ativar/Desativar Empresa"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
         <Button
-            android:id="@+id/btnExcluir"
+            android:id="@+id/btnApagarEmpresa"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:backgroundTint="#C62828"
-            android:text="Excluir"
+            android:text="Apagar Empresa"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />

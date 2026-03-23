@@ -3,6 +3,7 @@ package com.girellidev.ironwatchadmin
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +28,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CompanyAdapter
+    private lateinit var btnAddEmpresa: ImageButton
 
     private val serverHost = "181.215.45.62"
     private val serverPort = 5555
@@ -55,6 +57,7 @@ class DashboardActivity : AppCompatActivity() {
 
         drawerLayout = findViewById(R.id.drawer_layout)
         recyclerView = findViewById(R.id.recyclerView)
+        btnAddEmpresa = findViewById(R.id.btnAddEmpresa)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -66,6 +69,13 @@ class DashboardActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.menuButton).setOnClickListener {
             drawerLayout.openDrawer(GravityCompat.START)
+        }
+
+        btnAddEmpresa.setOnClickListener {
+            val intent = Intent(this, CreateCompanyActivity::class.java).apply {
+                putExtra("token", currentToken)
+            }
+            startActivity(intent)
         }
 
         findViewById<Button>(R.id.btnRefresh).setOnClickListener {
@@ -91,7 +101,7 @@ class DashboardActivity : AppCompatActivity() {
             putExtra("token", currentToken)
             putExtra("company_id", company.id)
             putExtra("company_name", company.nome)
-            putExtra("company_active", company.isActive)
+            putExtra("company_is_active", company.isActive)
         }
         startActivity(intent)
     }

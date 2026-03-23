@@ -15,7 +15,6 @@
         android:theme="@style/Theme.IronWatchAdmin"
         tools:targetApi="31">
 
-        <!-- Tela de login / MainActivity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -26,12 +25,23 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!-- eu extremamente troiste porque professor non me deixa fazer aplicativos de pobre no meu tempo livre ...-->
-        <!-- Tela do Dashboard -->
+
         <activity
             android:name=".DashboardActivity"
             android:exported="false"
             android:label="Dashboard"
+            android:theme="@style/Theme.IronWatchAdmin" />
+
+        <activity
+            android:name=".CompanyDashboardActivity"
+            android:exported="false"
+            android:label="Dashboard da Empresa"
+            android:theme="@style/Theme.IronWatchAdmin" />
+
+        <activity
+            android:name=".CompanyCrudActivity"
+            android:exported="false"
+            android:label="CRUD da Empresa"
             android:theme="@style/Theme.IronWatchAdmin" />
 
         <meta-data
@@ -40,3 +50,4 @@
 
     </application>
 </manifest>
+<!-- eu extremamente troiste porque professor non me deixa fazer aplicativos de pobre no meu tempo livre ...-->

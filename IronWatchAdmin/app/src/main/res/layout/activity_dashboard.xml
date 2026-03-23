@@ -156,6 +156,14 @@
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold" />
+                <ImageButton
+    android:id="@+id/btnAddEmpresa"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    android:layout_marginEnd="12dp"
+    android:backgroundTint="#2E7D32"
+    android:contentDescription="Adicionar empresa"
+    android:src="@android:drawable/ic_input_add" />
         </LinearLayout>
     </com.google.android.material.navigation.NavigationView>
 

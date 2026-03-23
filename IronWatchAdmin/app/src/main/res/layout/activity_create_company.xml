@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bege">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <EditText
+            android:id="@+id/edtCompanyName"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_loginbox"
+            android:hint="Nome da nova empresa"
+            android:padding="12dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#A8A8A8" />
+
+        <Switch
+            android:id="@+id/switchActive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Criar como ativa"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnCriarEmpresa"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:backgroundTint="#2E7D32"
+            android:text="Criar Empresa"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

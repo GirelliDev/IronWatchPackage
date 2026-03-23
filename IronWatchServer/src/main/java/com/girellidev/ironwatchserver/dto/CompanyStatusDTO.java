@@ -2,30 +2,25 @@ package com.girellidev.ironwatchserver.dto;
 
 public class CompanyStatusDTO {
 
-    private String Nome;
-    private int is_active;
+    private int id;
+    private String nome;
+    private int isActive;
 
-    public CompanyStatusDTO() {
+    public CompanyStatusDTO(int id, String nome, int isActive) {
+        this.id = id;
+        this.nome = nome;
+        this.isActive = isActive;
     }
 
-    public CompanyStatusDTO(String nome, int is_active) {
-        this.Nome = nome;
-        this.is_active = is_active;
+    public int getId() {
+        return id;
     }
 
     public String getNome() {
-        return Nome;
+        return nome;
     }
 
-    public void setNome(String nome) {
-        this.Nome = nome;
-    }
-
-    public int getIs_active() {
-        return is_active;
-    }
-
-    public void setIs_active(int is_active) {
-        this.is_active = is_active;
+    public int getIsActive() {
+        return isActive;
     }
 }

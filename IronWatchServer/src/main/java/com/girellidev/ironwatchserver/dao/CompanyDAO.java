@@ -14,7 +14,7 @@ public class CompanyDAO {
         List<CompanyStatusDTO> companies = new ArrayList<>();
 
         String sql = """
-                SELECT Nome, is_active
+                SELECT id, Nome, is_active
                 FROM empresas
                 ORDER BY Nome ASC
                 """;
@@ -25,10 +25,11 @@ public class CompanyDAO {
                 ResultSet resultSet = statement.executeQuery()
         ) {
             while (resultSet.next()) {
+                int id = resultSet.getInt("id");
                 String nome = resultSet.getString("Nome");
                 int isActive = resultSet.getInt("is_active");
 
-                companies.add(new CompanyStatusDTO(nome, isActive));
+                companies.add(new CompanyStatusDTO(id, nome, isActive));
             }
         }
 
