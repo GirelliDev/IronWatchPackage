@@ -28,12 +28,10 @@ public class ProtocolHandler {
 
             request = request.trim();
 
-            // JSON novo
             if (request.startsWith("{")) {
                 return handleJsonRequest(request);
             }
 
-            // Legado
             if (request.startsWith("AUTH|")) {
                 return handleLegacyAuth(request);
             }
@@ -101,6 +99,13 @@ public class ProtocolHandler {
             case "USER_CREATE" -> handleUserCreate(request);
             case "CHAT_SEND" -> handleChatSend(request);
             case "LIST_COMPANIES" -> handleListCompanies(request);
+
+            case "COMPANY_CREATE" -> handleCompanyCreate(request);
+            case "COMPANY_UPDATE" -> handleCompanyUpdate(request);
+            case "COMPANY_DELETE" -> handleCompanyDelete(request);
+            case "COMPANY_SET_ACTIVE" -> handleCompanySetActive(request);
+            case "COMPANY_GENERATE_CODE" -> handleCompanyGenerateCode(request);
+
             default -> RouteResponse.error("Rota invalida: " + request.getAction());
         };
 
@@ -227,6 +232,183 @@ public class ProtocolHandler {
         } catch (Exception e) {
             e.printStackTrace();
             return RouteResponse.error("Erro ao listar empresas: " + e.getMessage());
+        }
+    }
+
+    private static RouteResponse handleCompanyCreate(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        if (isBlank(request.getNome())) {
+            return RouteResponse.error("Nome da empresa obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            int isActive = request.getIsActive() == null ? 1 : request.getIsActive();
+
+            boolean created = COMPANY_SERVICE.createCompany(
+                    request.getNome(),
+                    isActive
+            );
+
+            if (!created) {
+                return RouteResponse.error("Nao foi possivel criar empresa");
+            }
+
+            return RouteResponse.ok("Empresa criada com sucesso");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao criar empresa: " + e.getMessage());
+        }
+    }
+
+    private static RouteResponse handleCompanyUpdate(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        if (request.getCompanyId() == null) {
+            return RouteResponse.error("company_id obrigatorio");
+        }
+
+        if (isBlank(request.getNome())) {
+            return RouteResponse.error("Nome da empresa obrigatorio");
+        }
+
+        if (request.getIsActive() == null) {
+            return RouteResponse.error("is_active obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            boolean updated = COMPANY_SERVICE.updateCompany(
+                    request.getCompanyId(),
+                    request.getNome(),
+                    request.getIsActive()
+            );
+
+            if (!updated) {
+                return RouteResponse.error("Nao foi possivel atualizar empresa");
+            }
+
+            return RouteResponse.ok("Empresa atualizada com sucesso");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao atualizar empresa: " + e.getMessage());
+        }
+    }
+
+    private static RouteResponse handleCompanyDelete(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        if (request.getCompanyId() == null) {
+            return RouteResponse.error("company_id obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            boolean deleted = COMPANY_SERVICE.deleteCompany(
+                    request.getCompanyId()
+            );
+
+            if (!deleted) {
+                return RouteResponse.error("Nao foi possivel apagar empresa");
+            }
+
+            return RouteResponse.ok("Empresa apagada com sucesso");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao apagar empresa: " + e.getMessage());
+        }
+    }
+
+    private static RouteResponse handleCompanySetActive(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        if (request.getCompanyId() == null) {
+            return RouteResponse.error("company_id obrigatorio");
+        }
+
+        if (request.getIsActive() == null) {
+            return RouteResponse.error("is_active obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            boolean updated = COMPANY_SERVICE.setCompanyActive(
+                    request.getCompanyId(),
+                    request.getIsActive()
+            );
+
+            if (!updated) {
+                return RouteResponse.error("Nao foi possivel alterar status da empresa");
+            }
+
+            return RouteResponse.ok("Status da empresa atualizado com sucesso");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao alterar status da empresa: " + e.getMessage());
+        }
+    }
+
+    private static RouteResponse handleCompanyGenerateCode(RouteRequest request) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
+        if (request.getCompanyId() == null) {
+            return RouteResponse.error("company_id obrigatorio");
+        }
+
+        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+
+        if (!valid) {
+            return RouteResponse.error("Sessao invalida");
+        }
+
+        try {
+            Map<String, Object> data = COMPANY_SERVICE.generateCompanyCodePayload(
+                    request.getCompanyId()
+            );
+
+            return RouteResponse.ok(
+                    "Codigo gerado com sucesso",
+                    data
+            );
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RouteResponse.error("Erro ao gerar codigo: " + e.getMessage());
         }
     }
 
