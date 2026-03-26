@@ -1,2 +1,24 @@
-.idea
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build and dependencies
 /IronWatchServer/target/
+IronWatchAdmin/.gradle/
+IronWatchAdmin/app/build/
+IronWatchAdmin/.gradle/
+*.class
+*.jar
+
+# Secrets and environment
+.env
+.env.local
+*.local.properties
+asd
+
+# OS
+.DS_Store
+Thumbs.db

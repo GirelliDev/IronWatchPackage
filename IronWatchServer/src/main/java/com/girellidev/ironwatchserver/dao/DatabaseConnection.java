@@ -6,11 +6,17 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String URL =
-            "jdbc:mysql://localhost:3306/gds_ironwatch?useSSL=false&serverTimezone=UTC";
+    private static final String HOST = getEnv("DB_HOST", "localhost");
+    private static final String PORT = getEnv("DB_PORT", "3306");
+    private static final String DATABASE = getEnv("DB_NAME", "gds_ironwatch");
+    private static final String USER = getEnv("DB_USER", "ironwatch");
+    private static final String PASSWORD = getEnv("DB_PASSWORD", "");
+    private static final String USE_SSL = getEnv("DB_USE_SSL", "true");
 
-    private static final String USER = "ironwatch";
-    private static final String PASSWORD = "DNMQTDC";
+    private static final String URL = String.format(
+            "jdbc:mysql://%s:%s/%s?useSSL=%s&serverTimezone=UTC&allowPublicKeyRetrieval=false",
+            HOST, PORT, DATABASE, USE_SSL
+    );
 
     static {
         try {
@@ -22,5 +28,13 @@ public class DatabaseConnection {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+
+    private static String getEnv(String key, String defaultValue) {
+        String value = System.getenv(key);
+        if (value == null || value.trim().isEmpty()) {
+            return defaultValue;
+        }
+        return value;
     }
 }

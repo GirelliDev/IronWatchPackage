@@ -12,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.girellidev.ironwatchadmin.config.ServerConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -29,9 +30,6 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CompanyAdapter
     private lateinit var btnAddEmpresa: ImageButton
-
-    private val serverHost = "181.215.45.62"
-    private val serverPort = 5555
 
     private var socket: Socket? = null
     private var writer: OutputStreamWriter? = null
@@ -114,7 +112,7 @@ class DashboardActivity : AppCompatActivity() {
                 isConnecting = true
                 disconnect()
 
-                socket = Socket(serverHost, serverPort)
+                socket = Socket(ServerConfig.SERVER_HOST, ServerConfig.SERVER_PORT)
                 writer = OutputStreamWriter(socket!!.getOutputStream())
                 reader = BufferedReader(InputStreamReader(socket!!.getInputStream()))
 

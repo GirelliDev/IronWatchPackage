@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.girellidev.ironwatchadmin.config.ServerConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,9 +19,6 @@ import java.io.OutputStreamWriter
 import java.net.Socket
 
 class MainActivity : AppCompatActivity() {
-
-    private val serverHost = "181.215.45.62"
-    private val serverPort = 5555
 
     private lateinit var prefs: SharedPreferences
 
@@ -33,6 +31,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         prefs = getSharedPreferences("ironwatch_admin", MODE_PRIVATE)
+
+        // Carregar configuração salva ou usar padrão
+        val savedHost = prefs.getString("server_host", BuildConfig.SERVER_HOST) ?: BuildConfig.SERVER_HOST
+        val savedPort = prefs.getInt("server_port", BuildConfig.SERVER_PORT)
+        ServerConfig.initialize(savedHost, savedPort)
 
         val savedToken = prefs.getString("auth_token", null)
         if (!savedToken.isNullOrBlank()) {
@@ -78,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                     btnLogin.text = "Entrando..."
                 }
 
-                socket = Socket(serverHost, serverPort)
+                socket = Socket(ServerConfig.SERVER_HOST, ServerConfig.SERVER_PORT)
                 writer = OutputStreamWriter(socket.getOutputStream())
                 reader = BufferedReader(InputStreamReader(socket.getInputStream()))
 
@@ -166,3 +169,4 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
+
