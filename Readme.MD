@@ -2,7 +2,7 @@
 
 Plataforma de gerenciamento remoto e controle empresarial desenvolvida por **GirelliDev**.
 
-O **IronWatch** é um ecossistema modular que conecta administradores, clientes e servidores através de uma infraestrutura centralizada e segura.
+O **IronWatch**, apelidado de **SageKiller** é um ecossistema modular que conecta administradores, clientes e servidores através de uma infraestrutura centralizada e segura.
 
 O sistema foi projetado para ser **simples, rápido e robusto**, utilizando comunicação direta via **TCP Socket** e autenticação baseada em **tokens temporários**.
 

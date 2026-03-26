@@ -36,22 +36,49 @@ public class CompanyDAO {
         return companies;
     }
 
-    public boolean createCompany(String nome, int isActive) throws Exception {
+     public int createCompany(
+            String nome,
+            String razaoSocial,
+            String telefone,
+            String email,
+            String promptIa,
+            String endereco,
+            int dispositivosMax,
+            int isActive
+    ) throws Exception {
         String sql = """
-                INSERT INTO empresas (Nome, is_active)
-                VALUES (?, ?)
+                INSERT INTO empresas
+                (nome, razaosocial, telefone, email, promptia, endereco, dispositivos_max, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (
                 Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)
+                PreparedStatement statement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)
         ) {
             statement.setString(1, nome);
-            statement.setInt(2, isActive);
-            return statement.executeUpdate() > 0;
+            statement.setString(2, razaoSocial);
+            statement.setString(3, telefone);
+            statement.setString(4, email);
+            statement.setString(5, promptIa);
+            statement.setString(6, endereco);
+            statement.setInt(7, dispositivosMax);
+            statement.setInt(8, isActive);
+
+            int rows = statement.executeUpdate();
+            if (rows <= 0) {
+                throw new Exception("Falha ao criar empresa.");
+            }
+
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+            throw new Exception("Não foi possível obter o ID da empresa criada.");
         }
     }
-
     public boolean updateCompany(int companyId, String nome, int isActive) throws Exception {
         String sql = """
                 UPDATE empresas

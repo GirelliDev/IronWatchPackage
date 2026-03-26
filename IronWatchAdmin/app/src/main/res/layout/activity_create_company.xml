@@ -108,6 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:minHeight="48dp"
             android:text="Criar empresa ativa"
             android:textColor="#FFFFFF" />
 

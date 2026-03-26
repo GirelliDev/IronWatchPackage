@@ -43,6 +43,16 @@
             android:exported="false"
             android:label="CRUD da Empresa"
             android:theme="@style/Theme.IronWatchAdmin" />
+        <activity
+            android:name=".CreateCompanyActivity"
+            android:exported="false"
+            android:label="CRUD da Empresa"
+            android:theme="@style/Theme.IronWatchAdmin" />
+        <activity
+            android:name=".EditCompanyActivity"
+            android:exported="false"
+            android:label="CRUD da Empresa"
+            android:theme="@style/Theme.IronWatchAdmin" />
 
         <meta-data
             android:name="preloaded_fonts"
