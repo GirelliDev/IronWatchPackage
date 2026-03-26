@@ -133,36 +133,104 @@ Resposta do servidor:
 
 ---
 
-# 🚀 Executando o Servidor
+# 🔐 Segurança
 
-### Compilar
+Este projeto passou por uma auditoria de segurança. Confira os detalhes em:
+
+- **[SECURITY.md](SECURITY.md)** - Guia de boas práticas e segurança
+- **[ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md)** - Configuração segura de variáveis de ambiente
+
+### ✅ Implementações Recentes
+
+- ✅ Credenciais movidas para variáveis de ambiente
+- ✅ SSL/TLS habilitado no MySQL
+- ✅ IPs parametrizados (não hardcoded)
+- ✅ Arquivo suspeito removido do versionamento
+
+---
+
+## ⚙️ Configuração Inicial (IMPORTANTE!)
+
+Antes de executar, configure as variáveis de ambiente:
 
 ```bash
+# 1. Copie o arquivo de exemplo
+cp .env.example .env
+
+# 2. Edite com suas credenciais reais
+nano .env
+
+# Variáveis necessárias:
+# DB_HOST=localhost
+# DB_PORT=3306
+# DB_USER=seu_usuario
+# DB_PASSWORD=sua_senha_forte
+# DB_USE_SSL=true
+```
+
+**⚠️ SEGURANÇA**: Nunca commit o arquivo `.env` com dados sensíveis. Já está em `.gitignore`.
+
+Para mais detalhes, veja [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) e [SECURITY.md](SECURITY.md).
+
+## Compilar
+
+```bash
+cd IronWatchServer
 mvn clean package
 ```
 
-### Executar
+## Executar
 
 ```bash
-java -jar IronWatchServer.jar
+java -jar target/ironwatch-server.jar
+```
+
+Ou com variáveis específicas:
+
+```bash
+DB_HOST=db.example.com DB_USER=prod_user DB_PASSWORD=senha java -jar target/ironwatch-server.jar
 ```
 
 ---
 
 # 📱 Executando o App Android
 
-1. Abra o projeto no **Android Studio**
-2. Configure o endereço do servidor
+## ⚙️ Configuração Inicial (IMPORTANTE!)
 
-```kotlin
-private val serverhost = "SEU_IP_DO_SERVIDOR"
+1. Configure as variáveis de ambiente para o build:
+
+```bash
+export SERVER_HOST_BUILD=seu_servidor.com
+export SERVER_PORT_BUILD=5555
 ```
 
-3. Execute o projeto
+2. Ou edite diretamente em `build.gradle` do módulo `app`:
+
+```gradle
+buildTypes {
+    debug {
+        buildConfigField "String", "SERVER_HOST", "\"192.168.1.100\""
+        buildConfigField "int", "SERVER_PORT", "5555"
+    }
+    release {
+        buildConfigField "String", "SERVER_HOST", "\"api.seu-dominio.com\""
+        buildConfigField "int", "SERVER_PORT", "5555"
+    }
+}
+```
+
+**✅ Agora**: Host e porta são definidos em tempo de build, não mais hardcoded!
+
+## Executar
+
+1. Abra o projeto em **Android Studio**
+2. Execute o projeto:
 
 ```
 Run → Run 'app'
 ```
+
+Para mais detalhes sobre configuração, veja [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md).
 
 ---
 
