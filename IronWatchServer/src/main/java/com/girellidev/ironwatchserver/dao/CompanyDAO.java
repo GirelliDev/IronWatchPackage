@@ -14,9 +14,9 @@ public class CompanyDAO {
         List<CompanyStatusDTO> companies = new ArrayList<>();
 
         String sql = """
-                SELECT id, Nome, is_active
+                SELECT id, nome, is_active
                 FROM empresas
-                ORDER BY Nome ASC
+                ORDER BY nome ASC
                 """;
 
         try (
@@ -26,7 +26,7 @@ public class CompanyDAO {
         ) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String nome = resultSet.getString("Nome");
+                String nome = resultSet.getString("nome");
                 int isActive = resultSet.getInt("is_active");
 
                 companies.add(new CompanyStatusDTO(id, nome, isActive));
@@ -36,7 +36,7 @@ public class CompanyDAO {
         return companies;
     }
 
-     public int createCompany(
+    public int createCompany(
             String nome,
             String razaoSocial,
             String telefone,
@@ -76,13 +76,31 @@ public class CompanyDAO {
                 }
             }
 
-            throw new Exception("Não foi possível obter o ID da empresa criada.");
+            throw new Exception("Nao foi possivel obter o ID da empresa criada.");
         }
     }
-    public boolean updateCompany(int companyId, String nome, int isActive) throws Exception {
+
+    public boolean updateCompany(
+            int companyId,
+            String nome,
+            String razaoSocial,
+            String telefone,
+            String email,
+            String promptIa,
+            String endereco,
+            int dispositivosMax,
+            int isActive
+    ) throws Exception {
         String sql = """
                 UPDATE empresas
-                SET Nome = ?, is_active = ?
+                SET nome = ?,
+                    razaosocial = ?,
+                    telefone = ?,
+                    email = ?,
+                    promptia = ?,
+                    endereco = ?,
+                    dispositivos_max = ?,
+                    is_active = ?
                 WHERE id = ?
                 """;
 
@@ -91,8 +109,15 @@ public class CompanyDAO {
                 PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setString(1, nome);
-            statement.setInt(2, isActive);
-            statement.setInt(3, companyId);
+            statement.setString(2, razaoSocial);
+            statement.setString(3, telefone);
+            statement.setString(4, email);
+            statement.setString(5, promptIa);
+            statement.setString(6, endereco);
+            statement.setInt(7, dispositivosMax);
+            statement.setInt(8, isActive);
+            statement.setInt(9, companyId);
+
             return statement.executeUpdate() > 0;
         }
     }
@@ -127,7 +152,7 @@ public class CompanyDAO {
     }
 
     public String getCompanyNameById(int companyId) throws Exception {
-        String sql = "SELECT Nome FROM empresas WHERE id = ?";
+        String sql = "SELECT nome FROM empresas WHERE id = ?";
 
         try (
                 Connection connection = DatabaseConnection.getConnection();
@@ -137,7 +162,7 @@ public class CompanyDAO {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSet.getString("Nome");
+                    return resultSet.getString("nome");
                 }
             }
         }
