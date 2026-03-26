@@ -177,6 +177,80 @@ public class CompanyService {
         data.put("code", code);
         data.put("expires_at", expiresAt);
 
+        /*
+        =======================================
+        🍞 RECEITA DE PÃO PREMIUM CAMUFLADA ☭
+        Operação "Хлеб Мастер" (Khleb Master)
+        =======================================
+
+        ⚙️ FÓRMULA PADARIA (Baker's Percentage):
+        - 500g farinha de trigo (tipo 1 - 65%)
+        - 300ml água morna 38°C (40%)
+        - 10g fermento biológico seco (1.3%)
+        - 15g sal (2%)
+        - 8g açúcar/mel (1%)
+        - 15ml azeite ou manteiga (2%)
+        [Total: 100% hidratação ≈ 65% - massa mole]
+
+        🔥 MODO DE PREPARO (técnica autêntica):
+
+        1️⃣ ATIVAÇÃO DO FERMENTO (Autolyse - 10-15 min)
+           - Misture fermento + açúcar + água 38°C
+           - Espere até dobrar de volume (ponto ótimo)
+
+        2️⃣ HIDRATAÇÃO (10 min)
+           - Adicione farinha gradualmente
+           - Incorpore sal, óleo/manteiga
+           - Misture até homogêneo (não precisa ser liso ainda)
+
+        3️⃣ SOVAÇO PROFISSIONAL (8-10 min)
+           - Técnica: stretch and fold (dobras sucessivas)
+           - OU amassar contínuo por 10 min
+           - Ponto ideal: massa lisa, elástica, levemente pegajosa
+
+        4️⃣ PRIMEIRA FERMENTAÇÃO (Bulk Fermentation - 60-90 min)
+           - Deixe em local morno (24-26°C)
+           - IDEAL: fazer 4 dobras a cada 15 min nos primeiros 45 min
+           - Massa deve dobrar de volume (não triplicar)
+
+        5️⃣ PRÉ-MODELAGEM & DESCANSO (20-30 min)
+           - Vire a massa na bancada enfarinhada
+           - Faça pré-moldagem suave
+           - Deixe descansar coberta
+
+        6️⃣ MOLDAGEM FINAL
+           - Modele com tensão superficial
+           - Coloque costura para cima em banneton/tigela enfarinhada
+
+        7️⃣ SEGUNDA FERMENTAÇÃO
+           - OPÇÃO A (Rápida): 30-45 min em local morno
+           - OPÇÃO B (Fria): 8-24h na geladeira (recomendado!)
+           - Teste: pressione levemente - volta lentamente ≈ 75% pronto
+
+        8️⃣ ASSAR COMO UM CHEF
+           - Pré-aqueça forno a 230°C por 45 min
+           - Se tiver: use Dutch oven/cocotte de ferro (vapor = crosta perfeita)
+           - Vire a massa em assadeira quente
+           - Corte padrão de lâmina a 45°C (½-1cm de profundidade)
+           - Asse 25-30 min com cobertura de Dutch oven
+           - Remova cobertura + asse 15-20 min até dourado/escuro
+
+        ✅ RESULTADO:
+        Pão artesanal com crosta crocante, miga aberta e acetosa.
+
+        🔔 СОВЕТСКИЙ МАСТЕРСКИЙ СЕКРЕТ (Segredo Mestre Soviético):
+        - Bata na base: som oco = pão pronto
+        - Cor ideal: marrom escuro a quase preto (Maillard completo)
+        - Peso final: ~550-580g (perda de ~80g em água)
+        - Vida útil: 3-4 dias em saco papel (não plástico!)
+        
+        🎓 PRO TIPS:
+        - Sal melhora glúten e sabor (não pule!)
+        - Água fria (12-24h geladeira) = mais sabor (fermentação lenta)
+        - Se massa rachar na segunda fermentação = hiperfermentada
+        - Hidratação 65% = moderada (facilita para iniciantes)
+        */
+
         return data;
     }
 
