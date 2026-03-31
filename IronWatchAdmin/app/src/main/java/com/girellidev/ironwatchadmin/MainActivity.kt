@@ -9,6 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.girellidev.ironwatchadmin.config.ServerConfig
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -21,7 +25,8 @@ import java.net.Socket
 class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: SharedPreferences
-
+    private lateinit var btnScanQr: Button
+    private lateinit var scanner: GmsBarcodeScanner
     private lateinit var edtLogin: EditText
     private lateinit var edtPassword: EditText
     private lateinit var edtToken: EditText
@@ -32,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences("ironwatch_admin", MODE_PRIVATE)
 
-        // Carregar configuração salva ou usar padrão
         val savedHost = prefs.getString("server_host", BuildConfig.SERVER_HOST) ?: BuildConfig.SERVER_HOST
         val savedPort = prefs.getInt("server_port", BuildConfig.SERVER_PORT)
         ServerConfig.initialize(savedHost, savedPort)
@@ -49,6 +53,17 @@ class MainActivity : AppCompatActivity() {
         edtPassword = findViewById(R.id.edtPassword)
         edtToken = findViewById(R.id.edtToken)
         btnLogin = findViewById(R.id.btnLogin)
+        btnScanQr = findViewById(R.id.btnScanQr)
+
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .build()
+
+        scanner = GmsBarcodeScanning.getClient(this, options)
+
+        btnScanQr.setOnClickListener {
+            iniciarScanner()
+        }
 
         btnLogin.setOnClickListener {
             val login = edtLogin.text.toString().trim()
@@ -67,6 +82,35 @@ class MainActivity : AppCompatActivity() {
 
             autenticar(login, password, token)
         }
+    }
+
+    private fun iniciarScanner() {
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                val raw = barcode.rawValue ?: return@addOnSuccessListener
+
+                try {
+                    val json = JSONObject(raw)
+
+                    val login = json.optString("login", "")
+                    val password = json.optString("password", "")
+                    val code = json.optString("code", "")
+
+                    edtLogin.setText(login)
+                    edtPassword.setText(password)
+                    edtToken.setText(code)
+
+                    toast("QR carregado")
+                } catch (e: Exception) {
+                    toast("QR inválido")
+                }
+            }
+            .addOnCanceledListener {
+                toast("Scanner cancelado")
+            }
+            .addOnFailureListener { e ->
+                toast("Erro ao abrir scanner: ${e.message}")
+            }
     }
 
     private fun autenticar(login: String, password: String, tokenInformado: String) {
@@ -169,4 +213,3 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
-
