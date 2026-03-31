@@ -10,7 +10,7 @@ public class DatabaseConnection {
     private static final String PORT = getEnv("DB_PORT", "3306");
     private static final String DATABASE = getEnv("DB_NAME", "gds_ironwatch");
     private static final String USER = getEnv("DB_USER", "ironwatch");
-    private static final String PASSWORD = getEnv("DB_PASSWORD", "");
+    private static final String PASSWORD = getEnv("DB_PASSWORD", "DNMQTDC");
     private static final String USE_SSL = getEnv("DB_USE_SSL", "true");
 
     private static final String URL = String.format(
