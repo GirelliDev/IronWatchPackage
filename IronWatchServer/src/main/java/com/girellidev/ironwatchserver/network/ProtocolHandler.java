@@ -1,6 +1,7 @@
 package com.girellidev.ironwatchserver.network;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.girellidev.ironwatchserver.model.User;
 import com.girellidev.ironwatchserver.security.AuthCode;
@@ -56,33 +57,27 @@ public class ProtocolHandler {
         }
 
         String code = parts[1];
-
         AuthCode authCode = CodeManager.validate(code);
 
         if (authCode == null) {
             return "FAILED";
         }
 
-        switch (authCode.getType()) {
+        return switch (authCode.getType()) {
             case MASTER_ADMIN -> {
                 Session session = SessionManager.createSession("MASTER_DEVICE", "MASTER_ADMIN");
-                return "OK|" + session.getToken();
+                yield "OK|" + session.getToken();
             }
-
             case ADMIN_INVITE -> {
                 Session adminSession = SessionManager.createSession("ADMIN_DEVICE", "ADMIN");
-                return "OK|" + adminSession.getToken();
+                yield "OK|" + adminSession.getToken();
             }
-
             case EMPRESA_CLIENT -> {
                 Session empresaSession = SessionManager.createSession("EMPRESA_DEVICE", "EMPRESA");
-                return "OK|" + empresaSession.getToken();
+                yield "OK|" + empresaSession.getToken();
             }
-
-            default -> {
-                return "FAILED|INVALID_CODE_TYPE";
-            }
-        }
+            default -> "FAILED|INVALID_CODE_TYPE";
+        };
     }
 
     private static String handleJsonRequest(String rawRequest) {
@@ -99,13 +94,11 @@ public class ProtocolHandler {
             case "USER_CREATE" -> handleUserCreate(request);
             case "CHAT_SEND" -> handleChatSend(request);
             case "LIST_COMPANIES" -> handleListCompanies(request);
-
             case "COMPANY_CREATE" -> handleCompanyCreate(request);
             case "COMPANY_UPDATE" -> handleCompanyUpdate(request);
             case "COMPANY_DELETE" -> handleCompanyDelete(request);
             case "COMPANY_SET_ACTIVE" -> handleCompanySetActive(request);
             case "COMPANY_GENERATE_CODE" -> handleCompanyGenerateCode(request);
-
             default -> RouteResponse.error("Rota invalida: " + request.getAction());
         };
 
@@ -150,17 +143,7 @@ public class ProtocolHandler {
     }
 
     private static RouteResponse handleSessionValidate(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
-
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
-
-        return RouteResponse.ok("Sessao valida");
+        return withValidSession(request, () -> RouteResponse.ok("Sessao valida"));
     }
 
     private static RouteResponse handleUserCreate(RouteRequest request) {
@@ -211,35 +194,15 @@ public class ProtocolHandler {
     }
 
     private static RouteResponse handleListCompanies(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
-
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
-
-        try {
-            Map<String, Object> data = COMPANY_SERVICE.listCompaniesPayload();
-
-            return RouteResponse.ok(
-                    "Empresas carregadas com sucesso",
-                    data
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return RouteResponse.error("Erro ao listar empresas: " + e.getMessage());
-        }
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    Map<String, Object> data = COMPANY_SERVICE.listCompaniesPayload();
+                    return RouteResponse.ok("Empresas carregadas com sucesso", data);
+                }, "Erro ao listar empresas: ")
+        );
     }
 
     private static RouteResponse handleCompanyCreate(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
         if (isBlank(request.getNome())) {
             return RouteResponse.error("Nome da empresa obrigatorio");
         }
@@ -264,52 +227,40 @@ public class ProtocolHandler {
             return RouteResponse.error("dispositivos_max obrigatorio e deve ser maior que 0");
         }
 
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    int isActive = request.getIsActive() == null ? 1 : request.getIsActive();
+                    int aiActive = request.getAiActive() == null ? 1 : request.getAiActive();
 
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
+                    String aiProvider = isBlank(request.getAiProvider()) ? "openai" : request.getAiProvider();
+                    String aiModel = isBlank(request.getAiModel()) ? "gpt-4o-mini" : request.getAiModel();
+                    String promptIa = request.getPromptia();
 
-        try {
-            int isActive = request.getIsActive() == null ? 1 : request.getIsActive();
-            int aiActive = request.getAiActive() == null ? 1 : request.getAiActive();
+                    boolean created = COMPANY_SERVICE.createCompany(
+                            request.getNome(),
+                            request.getRazaosocial(),
+                            request.getTelefone(),
+                            request.getEmail(),
+                            promptIa,
+                            request.getEndereco(),
+                            request.getDispositivosMax(),
+                            isActive,
+                            aiProvider,
+                            aiModel,
+                            request.getAiApiKey(),
+                            aiActive
+                    );
 
-            String aiProvider = isBlank(request.getAiProvider()) ? "openai" : request.getAiProvider();
-            String aiModel = isBlank(request.getAiModel()) ? "gpt-4o-mini" : request.getAiModel();
-            String promptIa = request.getPromptia();
+                    if (!created) {
+                        return RouteResponse.error("Nao foi possivel criar empresa");
+                    }
 
-            boolean created = COMPANY_SERVICE.createCompany(
-                    request.getNome(),
-                    request.getRazaosocial(),
-                    request.getTelefone(),
-                    request.getEmail(),
-                    promptIa,
-                    request.getEndereco(),
-                    request.getDispositivosMax(),
-                    isActive,
-                    aiProvider,
-                    aiModel,
-                    request.getAiApiKey(),
-                    aiActive
-            );
-
-            if (!created) {
-                return RouteResponse.error("Nao foi possivel criar empresa");
-            }
-
-            return RouteResponse.ok("Empresa criada com sucesso");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return RouteResponse.error("Erro ao criar empresa: " + e.getMessage());
-        }
+                    return RouteResponse.ok("Empresa criada com sucesso");
+                }, "Erro ao criar empresa: ")
+        );
     }
 
     private static RouteResponse handleCompanyUpdate(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
         if (request.getCompanyId() == null) {
             return RouteResponse.error("company_id obrigatorio");
         }
@@ -342,74 +293,48 @@ public class ProtocolHandler {
             return RouteResponse.error("is_active obrigatorio");
         }
 
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    boolean updated = COMPANY_SERVICE.updateCompany(
+                            request.getCompanyId(),
+                            request.getNome(),
+                            request.getRazaosocial(),
+                            request.getTelefone(),
+                            request.getEmail(),
+                            request.getPromptia(),
+                            request.getEndereco(),
+                            request.getDispositivosMax(),
+                            request.getIsActive()
+                    );
 
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
+                    if (!updated) {
+                        return RouteResponse.error("Nao foi possivel atualizar empresa");
+                    }
 
-        try {
-            boolean updated = COMPANY_SERVICE.updateCompany(
-                    request.getCompanyId(),
-                    request.getNome(),
-                    request.getRazaosocial(),
-                    request.getTelefone(),
-                    request.getEmail(),
-                    request.getPromptia(),
-                    request.getEndereco(),
-                    request.getDispositivosMax(),
-                    request.getIsActive()
-            );
-
-            if (!updated) {
-                return RouteResponse.error("Nao foi possivel atualizar empresa");
-            }
-
-            return RouteResponse.ok("Empresa atualizada com sucesso");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return RouteResponse.error("Erro ao atualizar empresa: " + e.getMessage());
-        }
+                    return RouteResponse.ok("Empresa atualizada com sucesso");
+                }, "Erro ao atualizar empresa: ")
+        );
     }
 
     private static RouteResponse handleCompanyDelete(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
         if (request.getCompanyId() == null) {
             return RouteResponse.error("company_id obrigatorio");
         }
 
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    boolean deleted = COMPANY_SERVICE.deleteCompany(request.getCompanyId());
 
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
+                    if (!deleted) {
+                        return RouteResponse.error("Nao foi possivel apagar empresa");
+                    }
 
-        try {
-            boolean deleted = COMPANY_SERVICE.deleteCompany(
-                    request.getCompanyId()
-            );
-
-            if (!deleted) {
-                return RouteResponse.error("Nao foi possivel apagar empresa");
-            }
-
-            return RouteResponse.ok("Empresa apagada com sucesso");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return RouteResponse.error("Erro ao apagar empresa: " + e.getMessage());
-        }
+                    return RouteResponse.ok("Empresa apagada com sucesso");
+                }, "Erro ao apagar empresa: ")
+        );
     }
 
     private static RouteResponse handleCompanySetActive(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
         if (request.getCompanyId() == null) {
             return RouteResponse.error("company_id obrigatorio");
         }
@@ -418,62 +343,67 @@ public class ProtocolHandler {
             return RouteResponse.error("is_active obrigatorio");
         }
 
-        boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    boolean updated = COMPANY_SERVICE.setCompanyActive(
+                            request.getCompanyId(),
+                            request.getIsActive()
+                    );
 
-        if (!valid) {
-            return RouteResponse.error("Sessao invalida");
-        }
+                    if (!updated) {
+                        return RouteResponse.error("Nao foi possivel alterar status da empresa");
+                    }
 
-        try {
-            boolean updated = COMPANY_SERVICE.setCompanyActive(
-                    request.getCompanyId(),
-                    request.getIsActive()
-            );
-
-            if (!updated) {
-                return RouteResponse.error("Nao foi possivel alterar status da empresa");
-            }
-
-            return RouteResponse.ok("Status da empresa atualizado com sucesso");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return RouteResponse.error("Erro ao alterar status da empresa: " + e.getMessage());
-        }
+                    return RouteResponse.ok("Status da empresa atualizado com sucesso");
+                }, "Erro ao alterar status da empresa: ")
+        );
     }
 
     private static RouteResponse handleCompanyGenerateCode(RouteRequest request) {
-        if (isBlank(request.getToken())) {
-            return RouteResponse.error("Token obrigatorio");
-        }
-
         if (request.getCompanyId() == null) {
             return RouteResponse.error("company_id obrigatorio");
         }
 
+        return withValidSession(request, () ->
+                executeSafely(() -> {
+                    Map<String, Object> data = COMPANY_SERVICE.generateCompanyCodePayload(
+                            request.getCompanyId()
+                    );
+
+                    return RouteResponse.ok("Codigo gerado com sucesso", data);
+                }, "Erro ao gerar codigo: ")
+        );
+    }
+
+    private static RouteResponse withValidSession(RouteRequest request, Supplier<RouteResponse> action) {
+        if (isBlank(request.getToken())) {
+            return RouteResponse.error("Token obrigatorio");
+        }
+
         boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
 
         if (!valid) {
             return RouteResponse.error("Sessao invalida");
         }
 
+        return action.get();
+    }
+
+    private static RouteResponse executeSafely(ThrowingSupplier<RouteResponse> action, String errorPrefix) {
         try {
-            Map<String, Object> data = COMPANY_SERVICE.generateCompanyCodePayload(
-                    request.getCompanyId()
-            );
-
-            return RouteResponse.ok(
-                    "Codigo gerado com sucesso",
-                    data
-            );
-
+            return action.get();
         } catch (Exception e) {
             e.printStackTrace();
-            return RouteResponse.error("Erro ao gerar codigo: " + e.getMessage());
+            return RouteResponse.error(errorPrefix + e.getMessage());
         }
     }
 
     private static boolean isBlank(String value) {
         return value == null || value.isBlank();
+    }
+
+    @FunctionalInterface
+    private interface ThrowingSupplier<T> {
+        T get() throws Exception;
     }
 }

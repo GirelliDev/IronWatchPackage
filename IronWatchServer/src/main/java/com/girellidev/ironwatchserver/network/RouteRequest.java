@@ -13,25 +13,24 @@ public class RouteRequest {
 
     private String message;
 
-    private Integer companyId;
+    // company
+    private Integer company_id;
     private String nome;
-    private Integer isActive;
+    private Integer is_active;
 
     // empresa
     private String razaosocial;
     private String telefone;
     private String email;
     private String endereco;
-
-    // JSON usa dispositivos_max
     private Integer dispositivos_max;
-
     private String promptia;
 
-    // AI
+    // AI config
     private String aiProvider;
     private String aiModel;
     private String aiApiKey;
+    private String chave_api;
     private Integer aiActive;
 
     public String getAction() { return action; }
@@ -45,22 +44,31 @@ public class RouteRequest {
 
     public String getMessage() { return message; }
 
-    public Integer getCompanyId() { return companyId; }
+    public Integer getCompanyId() { return company_id; }
     public String getNome() { return nome; }
-    public Integer getIsActive() { return isActive; }
+    public Integer getIsActive() { return is_active; }
 
     public String getRazaosocial() { return razaosocial; }
     public String getTelefone() { return telefone; }
     public String getEmail() { return email; }
     public String getEndereco() { return endereco; }
-
-    // getter usado pelo resto do sistema
     public Integer getDispositivosMax() { return dispositivos_max; }
-
     public String getPromptia() { return promptia; }
 
     public String getAiProvider() { return aiProvider; }
     public String getAiModel() { return aiModel; }
-    public String getAiApiKey() { return aiApiKey; }
+
+    public String getAiApiKey() {
+        if (aiApiKey != null && !aiApiKey.isBlank()) {
+            return aiApiKey;
+        }
+
+        if (chave_api != null && !chave_api.isBlank()) {
+            return chave_api;
+        }
+
+        return null;
+    }
+
     public Integer getAiActive() { return aiActive; }
 }

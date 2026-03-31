@@ -78,15 +78,20 @@ public class CompanyService {
         }
 
         if (aiApiKey != null && !aiApiKey.isBlank()) {
-            String encryptedKey = ApiKeyCrypto.encrypt(aiApiKey.trim());
+            try {
+                String encryptedKey = ApiKeyCrypto.encrypt(aiApiKey.trim());
 
-            return companyAIConfigDAO.createAIConfig(
-                    companyId,
-                    aiProvider.trim(),
-                    encryptedKey,
-                    aiModel.trim(),
-                    aiActive
-            );
+                companyAIConfigDAO.createAIConfig(
+                        companyId,
+                        aiProvider.trim(),
+                        encryptedKey,
+                        aiModel.trim(),
+                        aiActive
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+                // empresa já foi criada; não vamos mentir dizendo que falhou tudo
+            }
         }
 
         return true;
@@ -243,7 +248,7 @@ public class CompanyService {
         - Cor ideal: marrom escuro a quase preto (Maillard completo)
         - Peso final: ~550-580g (perda de ~80g em água)
         - Vida útil: 3-4 dias em saco papel (não plástico!)
-        
+
         🎓 PRO TIPS:
         - Sal melhora glúten e sabor (não pule!)
         - Água fria (12-24h geladeira) = mais sabor (fermentação lenta)
