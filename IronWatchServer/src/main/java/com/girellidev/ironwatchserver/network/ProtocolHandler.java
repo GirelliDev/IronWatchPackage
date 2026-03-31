@@ -244,6 +244,26 @@ public class ProtocolHandler {
             return RouteResponse.error("Nome da empresa obrigatorio");
         }
 
+        if (isBlank(request.getRazaosocial())) {
+            return RouteResponse.error("Razao social obrigatoria");
+        }
+
+        if (isBlank(request.getTelefone())) {
+            return RouteResponse.error("Telefone obrigatorio");
+        }
+
+        if (isBlank(request.getEmail())) {
+            return RouteResponse.error("Email obrigatorio");
+        }
+
+        if (isBlank(request.getEndereco())) {
+            return RouteResponse.error("Endereco obrigatorio");
+        }
+
+        if (request.getDispositivosMax() == null || request.getDispositivosMax() <= 0) {
+            return RouteResponse.error("dispositivos_max obrigatorio e deve ser maior que 0");
+        }
+
         boolean valid = SECURITY_MANAGER.validateSession(request.getToken());
 
         if (!valid) {
@@ -252,10 +272,25 @@ public class ProtocolHandler {
 
         try {
             int isActive = request.getIsActive() == null ? 1 : request.getIsActive();
+            int aiActive = request.getAiActive() == null ? 1 : request.getAiActive();
+
+            String aiProvider = isBlank(request.getAiProvider()) ? "openai" : request.getAiProvider();
+            String aiModel = isBlank(request.getAiModel()) ? "gpt-4o-mini" : request.getAiModel();
+            String promptIa = request.getPromptia();
 
             boolean created = COMPANY_SERVICE.createCompany(
                     request.getNome(),
-                    isActive
+                    request.getRazaosocial(),
+                    request.getTelefone(),
+                    request.getEmail(),
+                    promptIa,
+                    request.getEndereco(),
+                    request.getDispositivosMax(),
+                    isActive,
+                    aiProvider,
+                    aiModel,
+                    request.getAiApiKey(),
+                    aiActive
             );
 
             if (!created) {
@@ -283,6 +318,26 @@ public class ProtocolHandler {
             return RouteResponse.error("Nome da empresa obrigatorio");
         }
 
+        if (isBlank(request.getRazaosocial())) {
+            return RouteResponse.error("Razao social obrigatoria");
+        }
+
+        if (isBlank(request.getTelefone())) {
+            return RouteResponse.error("Telefone obrigatorio");
+        }
+
+        if (isBlank(request.getEmail())) {
+            return RouteResponse.error("Email obrigatorio");
+        }
+
+        if (isBlank(request.getEndereco())) {
+            return RouteResponse.error("Endereco obrigatorio");
+        }
+
+        if (request.getDispositivosMax() == null || request.getDispositivosMax() <= 0) {
+            return RouteResponse.error("dispositivos_max obrigatorio e deve ser maior que 0");
+        }
+
         if (request.getIsActive() == null) {
             return RouteResponse.error("is_active obrigatorio");
         }
@@ -297,6 +352,12 @@ public class ProtocolHandler {
             boolean updated = COMPANY_SERVICE.updateCompany(
                     request.getCompanyId(),
                     request.getNome(),
+                    request.getRazaosocial(),
+                    request.getTelefone(),
+                    request.getEmail(),
+                    request.getPromptia(),
+                    request.getEndereco(),
+                    request.getDispositivosMax(),
                     request.getIsActive()
             );
 
