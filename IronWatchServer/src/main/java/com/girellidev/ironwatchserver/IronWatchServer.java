@@ -13,7 +13,7 @@ import com.girellidev.ironwatchserver.security.LoginQrPayload;
 public class IronWatchServer {
 
     private static final String IMAGE_PATH =
-            "src/main/java/girellidev/ironwatchserver/assets/1.jpg";
+            "src/main/java/com/girellidev/ironwatchserver/assets/1.jpg";
 
     private static final String EXPECTED_HASH =
             "fd2d474da42a501bf4fb31fdde62dab2da615db8f0dd7cc74f460997ebf56dfd";
