@@ -17,15 +17,18 @@ public class RouteRequest {
     private String nome;
     private Integer isActive;
 
-    // novos campos empresa
+    // empresa
     private String razaosocial;
     private String telefone;
     private String email;
     private String endereco;
-    private Integer dispositivosMax;
+
+    // JSON usa dispositivos_max
+    private Integer dispositivos_max;
+
     private String promptia;
 
-    // AI config
+    // AI
     private String aiProvider;
     private String aiModel;
     private String aiApiKey;
@@ -50,7 +53,10 @@ public class RouteRequest {
     public String getTelefone() { return telefone; }
     public String getEmail() { return email; }
     public String getEndereco() { return endereco; }
-    public Integer getDispositivosMax() { return dispositivosMax; }
+
+    // getter usado pelo resto do sistema
+    public Integer getDispositivosMax() { return dispositivos_max; }
+
     public String getPromptia() { return promptia; }
 
     public String getAiProvider() { return aiProvider; }
