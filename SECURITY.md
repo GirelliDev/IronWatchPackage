@@ -1,14 +1,6 @@
 # 🔒 Guia de Segurança - IronWatchPackage
 
 ## Configuração de Credenciais
-
-### ❌ NÃO FAÇA
-```java
-// ❌ NUNCA hardcode credenciais
-String password = "DNMQTDC";
-String ipServer = "181.215.45.62";
-```
-
 ### ✅ FAÇA
 ```java
 // ✅ Use variáveis de ambiente
