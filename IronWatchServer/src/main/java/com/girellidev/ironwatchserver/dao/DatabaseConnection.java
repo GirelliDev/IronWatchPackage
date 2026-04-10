@@ -10,8 +10,8 @@ public final class DatabaseConnection {
     private static final String PORT = getEnv("DB_PORT", "3306");
     private static final String DATABASE = getEnv("DB_NAME", "gds_ironwatch");
     private static final String USER = getEnv("DB_USER", "ironwatch");
-    private static final String PASSWORD = getEnv("DB_PASSWORD", "DNMQTDC");
-    private static final String USE_SSL = getEnv("DB_USE_SSL", "false");
+    private static final String PASSWORD = getEnvRequired("DB_PASSWORD");
+    private static final String USE_SSL = getEnv("DB_USE_SSL", "true");
 
     private static final String URL = String.format(
             "jdbc:mysql://%s:%s/%s?useSSL=%s&serverTimezone=UTC&allowPublicKeyRetrieval=true&connectTimeout=5000",
@@ -77,6 +77,21 @@ public final class DatabaseConnection {
 
         if (value == null || value.trim().isEmpty()) {
             return defaultValue;
+        }
+
+        return value.trim();
+
+    }
+
+    private static String getEnvRequired(String key) {
+
+        String value = System.getenv(key);
+
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "Variavel de ambiente obrigatoria nao definida: " + key + 
+                    ". Configure a variavel antes de iniciar a aplicacao."
+            );
         }
 
         return value.trim();

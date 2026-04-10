@@ -12,8 +12,24 @@ import com.girellidev.ironwatchserver.security.LoginQrPayload;
 
 public class IronWatchServer {
 
-    private static final String IMAGE_PATH =
-            "src/main/java/com/girellidev/ironwatchserver/assets/1.jpg";
+    private static final String IMAGE_PATH = resolveImagePath();
+    
+    private static String resolveImagePath() {
+        // Tenta primeiro o caminho relativo (execução a partir de IronWatchServer)
+        File relativePath = new File("src/main/java/com/girellidev/ironwatchserver/assets/1.jpg");
+        if (relativePath.exists()) {
+            return relativePath.getAbsolutePath();
+        }
+        
+        // Tenta a partir de um nível acima (execução a partir de IronWatchPackage)
+        File parentPath = new File("IronWatchServer/src/main/java/com/girellidev/ironwatchserver/assets/1.jpg");
+        if (parentPath.exists()) {
+            return parentPath.getAbsolutePath();
+        }
+        
+        // Retorna o caminho padrão se nenhum for encontrado
+        return "src/main/java/com/girellidev/ironwatchserver/assets/1.jpg";
+    }
 
     private static final String EXPECTED_HASH =
             "fd2d474da42a501bf4fb31fdde62dab2da615db8f0dd7cc74f460997ebf56dfd";
@@ -63,7 +79,7 @@ public class IronWatchServer {
 
             ConsoleQrRenderer.printQr(qrJson);
 
-            int port = 5555;
+            int port = Integer.parseInt(System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "5555");
             TcpServer server = new TcpServer(port);
 
             System.out.println("[BOOT] Tentando Iniciar Protocolo TCP....");
