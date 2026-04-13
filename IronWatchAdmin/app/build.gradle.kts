@@ -15,8 +15,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "SERVER_HOST", "\"${System.getenv("SERVER_HOST_BUILD") ?: "localhost"}\"")
-        buildConfigField("int", "SERVER_PORT", "${System.getenv("SERVER_PORT_BUILD")?.toInteger() ?: 5555}")
+        
+        val serverHost = System.getenv("SERVER_HOST_BUILD") ?: "localhost"
+        val serverPort = (System.getenv("SERVER_PORT_BUILD")?.toInt() ?: 5555)
+        
+        buildConfigField("String", "SERVER_HOST", "\"$serverHost\"")
+        buildConfigField("int", "SERVER_PORT", "$serverPort")
     }
 
     buildTypes {
