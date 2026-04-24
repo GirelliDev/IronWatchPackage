@@ -179,6 +179,13 @@
   },
   "active": "d0c93363131348c4",
   "lastOpenFiles": [
+    "2026-04-23-portable-copilot-launcher.md",
+    "2026-04-23-copilot-node-fallback.md",
+    "2026-04-23-portable-node.md",
+    "2026-04-23-portable-copilot.md",
+    "readme.md",
+    "copilot-actions.md",
+    "10-admin-layout-fixes_pt.md",
     "09-fix-openai-apikey-save_pt.md",
     "000-cerebro-projeto.md",
     "08-db-schema_pt.md",
@@ -197,7 +204,6 @@
     "03-admin-android.md",
     "02-server.md",
     "01-architecture.md",
-    "copilot-actions.md",
     "Bem-vindo.md"
   ]
 }

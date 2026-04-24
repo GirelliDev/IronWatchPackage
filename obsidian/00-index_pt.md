@@ -13,4 +13,11 @@ Links
 - [[04-how-to-run_pt]]
 - [[05-dependencies-and-tech_pt]]
 - [[06-todos_pt]]
+- [[07-message-schema_pt]]
+- [[08-db-schema_pt]]
+- [[09-fix-openai-apikey-save_pt]]
 - [[copilot-actions]]
+
+Arquivos adicionais
+- [[10-admin-layout-fixes_pt]]
+- [[000-cerebro-projeto]]

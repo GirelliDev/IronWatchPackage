@@ -1,0 +1,7 @@
+{
+  "name": "portable-node-packages",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local npm package area for portable node usage. Add desired deps and run setup script.",
+  "dependencies": {}
+}
