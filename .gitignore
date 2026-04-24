@@ -10,6 +10,9 @@
 IronWatchAdmin/.gradle/
 IronWatchAdmin/app/build/
 IronWatchAdmin/.gradle/
+IronWatchUser/.gradle/
+IronWatchUser/app/build/
+IronWatchUser/.gradle/
 *.class
 *.jar
 
