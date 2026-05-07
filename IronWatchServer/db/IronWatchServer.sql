@@ -134,3 +134,6 @@ CREATE TABLE chat_message (
     CONSTRAINT fk_chat_message_usuario
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE usuarios
+MODIFY empresa_id INT UNSIGNED NULL;
