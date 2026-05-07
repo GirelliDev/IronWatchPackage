@@ -11,7 +11,6 @@ CREATE TABLE empresas (
     razaosocial VARCHAR(255) NOT NULL,
     telefone VARCHAR(20) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    chave_api VARCHAR(255) NOT NULL UNIQUE,
     promptia TEXT,
     endereco VARCHAR(255) NOT NULL,
     dispositivos_max INT UNSIGNED NOT NULL DEFAULT 5,
