@@ -20,8 +20,10 @@
 
     <TextView
         android:id="@+id/textAcessoRestrito"
-        android:layout_width="367dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="70dp"
         android:fontFamily="@font/roboto_mono_bold"
         android:gravity="center"
@@ -33,8 +35,10 @@
 
     <TextView
         android:id="@+id/textDescricao"
-        android:layout_width="367dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/roboto_mono_bold"
         android:gravity="center"
@@ -46,8 +50,10 @@
 
     <LinearLayout
         android:id="@+id/loginbox"
-        android:layout_width="354dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_loginbox"
         android:elevation="4dp"
