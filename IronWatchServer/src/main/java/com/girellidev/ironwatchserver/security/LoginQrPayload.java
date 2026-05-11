@@ -4,7 +4,7 @@ public class LoginQrPayload {
 
     private final String code;
 
-    public LoginQrPayload(String code, String login, String password) {
+    public LoginQrPayload(String code) {
         this.code = code;
     }
 
@@ -12,10 +12,9 @@ public class LoginQrPayload {
         return code;
     }
 
-
     public String toJson() {
         return "{"
-                + "\"code\":\"" + escape(code) + "\","
+                + "\"code\":\"" + escape(code) + "\""
                 + "}";
     }
 
