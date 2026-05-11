@@ -21,6 +21,8 @@ android {
         
         buildConfigField("String", "SERVER_HOST", "\"$serverHost\"")
         buildConfigField("int", "SERVER_PORT", "$serverPort")
+        buildConfigField("String", "SERVER_HOST", "\"178.83.141.82\"")
+        buildConfigField("int", "SERVER_PORT", "5555")
     }
 
     buildTypes {
