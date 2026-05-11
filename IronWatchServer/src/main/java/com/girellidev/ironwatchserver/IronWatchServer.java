@@ -62,13 +62,9 @@ public class IronWatchServer {
         try {
             var masterCode = CodeManager.generate(CodeType.MASTER_ADMIN);
 
-            String loginPadrao = "girellidev";
-            String senhaPadrao = "Kv13013+";
 
             LoginQrPayload qrPayload = new LoginQrPayload(
-                    masterCode.getCode(),
-                    loginPadrao,
-                    senhaPadrao
+                    masterCode.getCode()
             );
 
             String qrJson = qrPayload.toJson();

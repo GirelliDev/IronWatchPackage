@@ -1,0 +1,9 @@
+[Unit]
+Description=IronWatch GitHub Project Commit Sync
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/ironwatch-mailer
+ExecStart=/opt/ironwatch-mailer/venv/bin/python /opt/ironwatch-mailer/ironwatch_project_sync.py sync

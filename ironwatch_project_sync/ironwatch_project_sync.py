@@ -1,0 +1,30 @@
+OPENAI_API_KEY=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
+OPENAI_MODEL=gpt-5.2
+
+GITHUB_REPO=corelabsbr/cl_ironwatchpackage
+GITHUB_TOKEN=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
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=matheusgirelli357@gmail.com
+SMTP_PASS=mnzx twon dxef bayz
+MAIL_FROM=seuemail@gmail.com
+
+MAIL_TO_SELF=contato@corelabs.dev.br
+MAIL_TO_PROFESSOR=marcelo.dipp@senairs.org.br
+GITHUB_ORG=CorelabsBR
+GITHUB_PROJECT_NUMBER=4
+
+GITHUB_ASSIGNEES=girellidev,unopla
+
+PROJECT_STATUS_FIELD=Status
+PROJECT_PRIORITY_FIELD=Prioridade
+PROJECT_SIZE_FIELD=Tamanho
+PROJECT_IN_PROGRESS=Em andamento
+PROJECT_TODO=A fazer
+PROJECT_DONE=Concluido
+AI_MANAGER_SKIP_CREATE_AT=220
+AI_MANAGER_ONE_CREATE_ABOVE=200
+AI_MANAGER_THREE_CREATE_AT_OR_BELOW=150
+REPO_MAX_FILES_TO_READ=15
+root@vortexsys:/opt/ironwatch-mailer# 

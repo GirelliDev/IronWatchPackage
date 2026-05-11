@@ -1,0 +1,38 @@
+name: IronWatch AI Manager
+
+on:
+  schedule:
+    - cron: '50 15 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  manager:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      repository-projects: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install -r scripts/manager/requirements.txt
+
+      - name: Run manager
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ORG: CorelabsBR
+          GITHUB_REPO: CorelabsBR/CL_IronWatchPackage
+          GITHUB_PROJECT_NUMBER: 4
+          PROJECT_STATUS_FIELD: Status
+          PROJECT_TODO: A Fazer
+          PROJECT_IN_PROGRESS: Em andamento
+          PROJECT_DONE: Concluído
+
+        run: python scripts/manager/manager.py manager

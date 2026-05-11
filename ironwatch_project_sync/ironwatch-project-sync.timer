@@ -1,0 +1,10 @@
+[Unit]
+Description=Run IronWatch GitHub Project Commit Sync every 10 minutes on weekdays
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 08:00:00/10min
+Persistent=true
+RandomizedDelaySec=30
+
+[Install]
+WantedBy=timers.target
