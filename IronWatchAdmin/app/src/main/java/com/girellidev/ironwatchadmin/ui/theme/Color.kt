@@ -1,4 +1,4 @@
-package com.girellidev.ironwatchadmin.ui.theme
+package com.corelabs.ironwatchadmin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

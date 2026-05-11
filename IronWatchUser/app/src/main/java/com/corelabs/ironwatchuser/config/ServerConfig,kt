@@ -1,0 +1,13 @@
+package com.girellidev.ironwatchuser.config
+
+object ServerConfig {
+    var SERVER_HOST: String = "localhost"
+    var SERVER_PORT: Int = 5555
+
+    fun initialize(host: String, port: Int) {
+        SERVER_HOST = host
+        SERVER_PORT = port
+    }
+
+    fun getConnectionString(): String = "$SERVER_HOST:$SERVER_PORT"
+}
