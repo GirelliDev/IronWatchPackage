@@ -74,8 +74,7 @@ public class IronWatchServer {
             String qrJson = qrPayload.toJson();
 
             System.out.println("[BOOT] CODIGO MASTER ADMIN: " + masterCode.getCode());
-            System.out.println("[BOOT] LOGIN QR: " + loginPadrao);
-            System.out.println("[BOOT] SENHA QR: " + senhaPadrao);
+            System.out.println("[BOOT] USE SUAS CREDENCIAIS PARA LOGAR");
 
             ConsoleQrRenderer.printQr(qrJson);
 

@@ -8,7 +8,7 @@ Este documento explica como configurar as variáveis de ambiente após clonar/us
 
 ```bash
 # Copie o arquivo de exemplo
-cp .env.example .env
+
 
 # Edite com suas configurações reais
 nano .env  # ou seu editor preferido
