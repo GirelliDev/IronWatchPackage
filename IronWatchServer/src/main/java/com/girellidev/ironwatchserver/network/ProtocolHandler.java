@@ -4,21 +4,26 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import com.girellidev.ironwatchserver.model.User;
+import com.girellidev.ironwatchserver.security.AntiBruteForceService;
 import com.girellidev.ironwatchserver.security.AuthCode;
 import com.girellidev.ironwatchserver.security.CodeManager;
 import com.girellidev.ironwatchserver.security.SecurityManager;
 import com.girellidev.ironwatchserver.security.Session;
 import com.girellidev.ironwatchserver.security.SessionManager;
+import com.girellidev.ironwatchserver.security.loginAttempt;
 import com.girellidev.ironwatchserver.service.ChatService;
 import com.girellidev.ironwatchserver.service.CompanyService;
 
 public class ProtocolHandler {
+    private static final AntiBruteForceService ANTI_BRUTE_FORCE_SERVICE =
+        new AntiBruteForceService();
 
     private static final SecurityManager SECURITY_MANAGER = new SecurityManager();
     private static final ChatService CHAT_SERVICE = new ChatService();
     private static final CompanyService COMPANY_SERVICE = new CompanyService();
 
     private ProtocolHandler() {
+        
     }
 
     public static String handle(String request) {
@@ -109,38 +114,50 @@ public class ProtocolHandler {
         return RouteResponse.ok("PONG");
     }
 
+    
     private static RouteResponse handleAuthLogin(RouteRequest request) {
-        if (isBlank(request.getLogin()) || isBlank(request.getPassword())) {
-            return RouteResponse.error("Login e senha sao obrigatorios");
-        }
-
-        boolean valid = SECURITY_MANAGER.validateLogin(
-                request.getLogin(),
-                request.getPassword()
-        );
-
-        if (!valid) {
-            return RouteResponse.error("Login invalido");
-        }
-
-        String token = SECURITY_MANAGER.createSession(request.getLogin());
-
-        if (token == null) {
-            return RouteResponse.error("Nao foi possivel criar sessao");
-        }
-
-        User user = SECURITY_MANAGER.getUserByLogin(request.getLogin());
-
-        if (user == null) {
-            return RouteResponse.error("Usuario nao encontrado apos login");
-        }
-
-        return RouteResponse.okWithToken(
-                "Login realizado com sucesso",
-                token,
-                user
-        );
+    if (isBlank(request.getLogin()) || isBlank(request.getPassword())) {
+        return RouteResponse.error("Login e senha sao obrigatorios");
     }
+
+    String identificador = request.getLogin().trim().toLowerCase();
+
+   loginAttempt tentativa = ANTI_BRUTE_FORCE_SERVICE.getAttempt(identificador);
+
+    if (tentativa.estaBloqueado()) {
+        return RouteResponse.error("Muitas tentativas de login. Tente novamente mais tarde.");
+    }
+
+    boolean valid = SECURITY_MANAGER.validateLogin(
+            request.getLogin(),
+            request.getPassword()
+    );
+
+    if (!valid) {
+        ANTI_BRUTE_FORCE_SERVICE.registrarFalha(identificador);
+        return RouteResponse.error("Login invalido");
+    }
+
+    ANTI_BRUTE_FORCE_SERVICE.registrarSucesso(identificador);
+
+    String token = SECURITY_MANAGER.createSession(request.getLogin());
+
+    if (token == null) {
+        return RouteResponse.error("Nao foi possivel criar sessao");
+    }
+
+    User user = SECURITY_MANAGER.getUserByLogin(request.getLogin());
+
+    if (user == null) {
+        return RouteResponse.error("Usuario nao encontrado apos login");
+    }
+
+    return RouteResponse.okWithToken(
+            "Login realizado com sucesso",
+            token,
+            user
+    );
+}
 
     private static RouteResponse handleSessionValidate(RouteRequest request) {
         return withValidSession(request, () -> RouteResponse.ok("Sessao valida"));
