@@ -1,1 +1,1 @@
-issue #263: Não será feita pois, o codigo já fornece logs, e o terminal em si, fica completamente limpo.
+issue #263: Não será feita pois, o codigo já fornece logs, e o terminal em si, fica completamente limpo.asd
