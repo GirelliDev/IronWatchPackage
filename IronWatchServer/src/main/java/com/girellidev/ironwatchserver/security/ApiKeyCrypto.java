@@ -8,7 +8,10 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.girellidev.ironwatchserver.logger.LoggerService;
+
 public final class ApiKeyCrypto {
+    private static final LoggerService logger = new LoggerService();
 
     private static final String SECRET =
             System.getenv().getOrDefault("IRONWATCH_AES_KEY",
@@ -49,6 +52,7 @@ public final class ApiKeyCrypto {
         } catch (Exception e) {
 
             throw new RuntimeException("Erro ao criptografar API key", e);
+            logger.erro("APIKEYCRIPTO","Erro ao Criptografar Chave"+ e);
 
         }
     }

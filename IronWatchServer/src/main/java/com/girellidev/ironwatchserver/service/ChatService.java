@@ -1,11 +1,12 @@
 package com.girellidev.ironwatchserver.service;
 
 import com.girellidev.ironwatchserver.dao.ChatMessageDAO;
+import com.girellidev.ironwatchserver.logger.LoggerService;
 import com.girellidev.ironwatchserver.model.ChatMessage;
 import com.girellidev.ironwatchserver.model.User;
 
 public class ChatService {
-
+    LoggerService logger = new LoggerService();
     private final ChatMessageDAO chatMessageDAO;
     private final OpenAIService openAIService;
 

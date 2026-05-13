@@ -3,10 +3,12 @@
     import com.girellidev.ironwatchserver.core.Usuario;
 
     public class AuthService {
+    
 
         public static void validarUsuario(Usuario usuario) {
             if (usuario == null) {
                 throw new SecurityException("Usuario inexistente");
+            
             }
 
             if (!usuario.isAtivo()) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
 
+import com.girellidev.ironwatchserver.logger.LoggerService;
 import com.girellidev.ironwatchserver.network.TcpServer;
 import com.girellidev.ironwatchserver.security.CodeManager;
 import com.girellidev.ironwatchserver.security.CodeType;
@@ -11,6 +12,8 @@ import com.girellidev.ironwatchserver.security.ConsoleQrRenderer;
 import com.girellidev.ironwatchserver.security.LoginQrPayload;
 
 public class IronWatchServer {
+   private static final LoggerService logger = new LoggerService();
+
 
     private static final String IMAGE_PATH = resolveImagePath();
     
@@ -39,25 +42,18 @@ public class IronWatchServer {
         System.out.println("=================================");
         System.out.println("CORELABS - IRONWATCH V3");
         System.out.println("=================================");
+        logger.info("BOOT","=================================");
+        logger.info("BOOT","CORELABS - IRONWATCH V3");
+        logger.info("BOOT","=================================");
 
-        System.out.println("[BOOT] Verificando artefato obrigatório...");
+        logger.info("BOOT","Verificando Artefado Obricatório");
 
         if (!validateImage()) {
-            System.out.println("[BOOT] ERRO CRÍTICO");
-            System.out.println("[BOOT] Arquivo obrigatório ausente ou alterado");
-            System.out.println("[BOOT] Caminho esperado:");
-            System.out.println(IMAGE_PATH);
-
-            System.out.println();
-            System.out.println("Саботаж! (Sabotagem!)");
-            System.out.println("Servidor recusou iniciar.");
+            logger.erro("BOOT","Erro Critico, Arquivo obrigatório ausente ou alterado. Caminho esperado:"+ IMAGE_PATH);
             return;
         }
-
-        System.out.println("[BOOT] Artefato validado com sucesso");
-        System.out.println("[BOOT] Tentando iniciar...");
-        System.out.println("[BOOT] Iniciado com Sucesso!");
-        System.out.println("[BOOT] Gerando Codigo Master Admin....");
+        logger.info("BOOT","Artefado Validado com Sucesso");
+        logger.info("BOOT","Iniciando...");
 
         try {
             var masterCode = CodeManager.generate(CodeType.MASTER_ADMIN);
@@ -77,13 +73,16 @@ public class IronWatchServer {
             int port = Integer.parseInt(System.getenv("SERVER_PORT") != null ? System.getenv("SERVER_PORT") : "5555");
             TcpServer server = new TcpServer(port);
 
-            System.out.println("[BOOT] Tentando Iniciar Protocolo TCP....");
+           logger.info("BOOT","Iniciando Servidor TCP");
 
             server.start();
 
         } catch (Exception e) {
-            System.out.println("Servidor não conseguiu iniciar, Verifique erros abaixo, mocorongo");
-            e.printStackTrace();
+         logger.erro(
+             "BOOT",
+              "Erro critico ao iniciar servidor",
+               e
+         );
         }
     }
 
