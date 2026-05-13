@@ -50,9 +50,9 @@ public final class ApiKeyCrypto {
             return Base64.getEncoder().encodeToString(combined);
 
         } catch (Exception e) {
-
+            logger.erro("API_KEY", "Erro ao criptografar", e);
             throw new RuntimeException("Erro ao criptografar API key", e);
-            logger.erro("APIKEYCRIPTO","Erro ao Criptografar Chave"+ e);
+            
 
         }
     }
